@@ -60,16 +60,16 @@ export const AdminLayout = ({
   // Redirect if not super admin
   if (!isSuperAdmin) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Card className="p-8 max-w-md text-center">
-          <Shield className="h-16 w-16 text-red-500 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-3 sm:p-4">
+        <Card className="p-4 sm:p-6 lg:p-8 w-full max-w-sm sm:max-w-md text-center">
+          <Shield className="h-12 w-12 sm:h-16 sm:w-16 text-red-500 mx-auto mb-3 sm:mb-4" />
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">
             Accès non autorisé
           </h2>
-          <p className="text-gray-600 mb-6">
+          <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
             Seuls les super administrateurs peuvent accéder à cette section.
           </p>
-          <Button onClick={() => navigate('/')} className="w-full">
+          <Button onClick={() => navigate('/')} className="w-full min-h-[44px] touch-manipulation">
             <Home className="mr-2 h-4 w-4" />
             Retour à l'accueil
           </Button>
