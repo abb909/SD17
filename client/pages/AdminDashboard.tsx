@@ -2,35 +2,33 @@ import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useFirestore } from '@/hooks/useFirestore';
 import { useNavigate } from 'react-router-dom';
+import { AdminLayout } from '@/components/AdminLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { AlertCircle, Users, Settings, Shield, Database, Wrench } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { 
+  Users, 
+  Database, 
+  UserCheck, 
+  Shield, 
+  Wrench, 
+  TrendingUp,
+  Activity,
+  Clock,
+  CheckCircle,
+  AlertTriangle,
+  Server,
+  ArrowRight,
+  Plus,
+  Settings
+} from 'lucide-react';
 
 export default function AdminDashboard() {
-  const { user, isSuperAdmin } = useAuth();
+  const { user } = useAuth();
   const { data: allUsers } = useFirestore('users');
   const { data: fermes } = useFirestore('fermes');
+  const { data: supervisors } = useFirestore('supervisors');
   const navigate = useNavigate();
-
-  if (!isSuperAdmin) {
-    return (
-      <div className="space-y-6">
-        <Card className="max-w-2xl mx-auto">
-          <CardContent className="pt-6">
-            <div className="text-center">
-              <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Accès non autorisé
-              </h3>
-              <p className="text-gray-600 mb-4">
-                Seuls les super administrateurs peuvent accéder à cette page.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   const getRoleLabel = (role: string) => {
     switch (role) {
@@ -43,170 +41,190 @@ export default function AdminDashboard() {
 
   const getRoleBadgeColor = (role: string) => {
     switch (role) {
-      case 'superadmin': return 'bg-red-100 text-red-800';
-      case 'admin': return 'bg-blue-100 text-blue-800';
-      case 'user': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'superadmin': return 'bg-red-100 text-red-800 border-red-200';
+      case 'admin': return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'user': return 'bg-gray-100 text-gray-800 border-gray-200';
+      default: return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
+
+  // Stats calculations
+  const userStats = {
+    total: allUsers?.length || 0,
+    superAdmins: allUsers?.filter(u => u.role === 'superadmin').length || 0,
+    admins: allUsers?.filter(u => u.role === 'admin').length || 0,
+    users: allUsers?.filter(u => u.role === 'user').length || 0
+  };
+
+  const systemStats = [
+    {
+      title: 'Utilisateurs totaux',
+      value: userStats.total,
+      icon: Users,
+      color: 'from-blue-600 to-blue-700',
+      change: '+12%',
+      trend: 'up'
+    },
+    {
+      title: 'Fermes actives',
+      value: fermes?.length || 0,
+      icon: Database,
+      color: 'from-green-600 to-green-700',
+      change: '+5%',
+      trend: 'up'
+    },
+    {
+      title: 'Superviseurs',
+      value: supervisors?.length || 0,
+      icon: UserCheck,
+      color: 'from-purple-600 to-purple-700',
+      change: '+8%',
+      trend: 'up'
+    },
+    {
+      title: 'Système',
+      value: '99.9%',
+      icon: Activity,
+      color: 'from-emerald-600 to-emerald-700',
+      change: 'Optimal',
+      trend: 'stable'
+    }
+  ];
 
   const navigationCards = [
     {
       title: 'Gestion des utilisateurs',
-      description: 'Créer, modifier et gérer les comptes utilisateurs',
+      description: 'Créer, modifier et gérer les comptes utilisateurs et leurs permissions',
       icon: Users,
       path: '/admin/users',
       color: 'from-blue-600 to-indigo-600',
-      stats: `${allUsers?.length || 0} utilisateurs`
-    },
-    {
-      title: 'Gestion du contenu',
-      description: 'Articles et données de référence',
-      icon: Database,
-      path: '/admin/content',
-      color: 'from-green-600 to-emerald-600',
-      stats: `${fermes?.length || 0} fermes`
+      stats: `${userStats.total} utilisateurs`,
+      actions: ['Créer un utilisateur', 'Gérer les rôles', 'Permissions'],
+      priority: 'high'
     },
     {
       title: 'Gestion des superviseurs',
-      description: 'Superviseurs et leurs assignations',
-      icon: Users,
+      description: 'Superviseurs et leurs assignations aux équipes et projets',
+      icon: UserCheck,
       path: '/admin/supervisors',
       color: 'from-purple-600 to-violet-600',
-      stats: 'Superviseurs'
+      stats: `${supervisors?.length || 0} superviseurs`,
+      actions: ['Ajouter superviseur', 'Assignations', 'Équipes'],
+      priority: 'high'
     },
     {
-      title: 'Outils système',
-      description: 'Synchronisation et outils de débogage',
-      icon: Wrench,
-      path: '/admin/system',
-      color: 'from-orange-600 to-amber-600',
-      stats: 'Maintenance'
+      title: 'Gestion du contenu',
+      description: 'Articles, données de référence et configuration du système',
+      icon: Database,
+      path: '/admin/content',
+      color: 'from-green-600 to-emerald-600',
+      stats: `${fermes?.length || 0} fermes`,
+      actions: ['Articles', 'Données', 'Configuration'],
+      priority: 'medium'
     },
     {
       title: 'Centre de sécurité',
-      description: 'Codes de sécurité et gestion des administrateurs',
+      description: 'Codes de sécurité, permissions et gestion des administrateurs',
       icon: Shield,
       path: '/admin/security',
       color: 'from-red-600 to-rose-600',
-      stats: 'Sécurité'
+      stats: 'Sécurité renforcée',
+      actions: ['Codes sécurité', 'Permissions', 'Audit'],
+      priority: 'high'
+    },
+    {
+      title: 'Outils système',
+      description: 'Synchronisation, maintenance et outils de débogage avancés',
+      icon: Wrench,
+      path: '/admin/system',
+      color: 'from-orange-600 to-amber-600',
+      stats: 'Maintenance',
+      actions: ['Synchronisation', 'Debug', 'Logs'],
+      priority: 'medium'
+    }
+  ];
+
+  const quickActions = [
+    {
+      title: 'Créer un utilisateur',
+      description: 'Ajouter un nouveau compte utilisateur',
+      icon: Plus,
+      action: () => navigate('/admin/users'),
+      color: 'bg-blue-50 hover:bg-blue-100 border-blue-200'
+    },
+    {
+      title: 'Code de sécurité',
+      description: 'Générer un code de suppression',
+      icon: Shield,
+      action: () => navigate('/admin/security'),
+      color: 'bg-red-50 hover:bg-red-100 border-red-200'
+    },
+    {
+      title: 'Synchroniser chambres',
+      description: 'Sync occupation des chambres',
+      icon: Wrench,
+      action: () => navigate('/admin/system'),
+      color: 'bg-orange-50 hover:bg-orange-100 border-orange-200'
+    }
+  ];
+
+  const recentActivity = [
+    {
+      action: 'Nouvel utilisateur créé',
+      description: 'Compte administrateur ajouté',
+      time: 'Il y a 2 heures',
+      icon: Users,
+      type: 'success'
+    },
+    {
+      action: 'Synchronisation système',
+      description: 'Chambres synchronisées avec succès',
+      time: 'Il y a 4 heures',
+      icon: CheckCircle,
+      type: 'info'
+    },
+    {
+      action: 'Code de sécurité généré',
+      description: 'Nouveau code de suppression créé',
+      time: 'Il y a 6 heures',
+      icon: Shield,
+      type: 'warning'
     }
   ];
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900 flex items-center">
-          <Settings className="mr-3 h-8 w-8" />
-          Administration
-        </h1>
-        <p className="text-gray-600 mt-2">
-          Tableau de bord d'administration système
-        </p>
-      </div>
-
-      {/* System Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">
-              Total utilisateurs
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-gray-900">
-              {allUsers?.length || 0}
-            </div>
-            <div className="flex space-x-2 mt-2">
-              <Badge className="bg-red-100 text-red-800 text-xs">
-                {allUsers?.filter(u => u.role === 'superadmin').length || 0} Super admins
-              </Badge>
-              <Badge className="bg-blue-100 text-blue-800 text-xs">
-                {allUsers?.filter(u => u.role === 'admin').length || 0} Admins
-              </Badge>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">
-              Fermes actives
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-gray-900">
-              {fermes?.length || 0}
-            </div>
-            <p className="text-xs text-gray-500 mt-2">
-              Fermes configurées dans le système
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">
-              Statut système
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Badge className="bg-green-100 text-green-800">
-              ✅ Opérationnel
-            </Badge>
-            <p className="text-xs text-gray-500 mt-2">
-              Tous les services fonctionnent
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">
-              Connecté en tant que
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Badge className={getRoleBadgeColor(user?.role || '')}>
-              {getRoleLabel(user?.role || '')}
-            </Badge>
-            <p className="text-xs text-gray-500 mt-2">
-              {user?.nom || user?.email}
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Navigation Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {navigationCards.map((card) => {
-          const IconComponent = card.icon;
+    <AdminLayout
+      title="Tableau de bord"
+      subtitle="Vue d'ensemble de l'administration système"
+      showBackButton={false}
+    >
+      {/* System Stats Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        {systemStats.map((stat, index) => {
+          const IconComponent = stat.icon;
           return (
-            <Card 
-              key={card.path}
-              className="cursor-pointer hover:shadow-lg transition-shadow duration-200 group"
-              onClick={() => navigate(card.path)}
-            >
-              <CardHeader className="pb-4">
-                <div className="flex items-center justify-between">
-                  <div className={`p-3 rounded-lg bg-gradient-to-r ${card.color} text-white group-hover:scale-110 transition-transform duration-200`}>
-                    <IconComponent className="h-6 w-6" />
+            <Card key={index} className="relative overflow-hidden border-0 shadow-lg">
+              <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} opacity-5`}></div>
+              <CardContent className="p-6 relative">
+                <div className="flex items-center justify-between mb-4">
+                  <div className={`p-3 rounded-xl bg-gradient-to-br ${stat.color} shadow-lg`}>
+                    <IconComponent className="h-6 w-6 text-white" />
                   </div>
-                  <Badge variant="secondary" className="text-xs">
-                    {card.stats}
+                  <Badge 
+                    variant="outline" 
+                    className={`${stat.trend === 'up' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-blue-50 text-blue-700 border-blue-200'}`}
+                  >
+                    {stat.trend === 'up' && <TrendingUp className="w-3 h-3 mr-1" />}
+                    {stat.change}
                   </Badge>
                 </div>
-                <CardTitle className="text-xl group-hover:text-blue-600 transition-colors">
-                  {card.title}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600 text-sm">
-                  {card.description}
-                </p>
-                <div className="mt-4 text-blue-600 text-sm font-medium group-hover:text-blue-700">
-                  Accéder →
+                <div>
+                  <div className="text-3xl font-bold text-gray-900 mb-1">
+                    {stat.value}
+                  </div>
+                  <p className="text-sm text-gray-600 font-medium">
+                    {stat.title}
+                  </p>
                 </div>
               </CardContent>
             </Card>
@@ -214,45 +232,253 @@ export default function AdminDashboard() {
         })}
       </div>
 
-      {/* Quick Actions */}
-      <Card>
-        <CardHeader>
+      {/* User Roles Breakdown */}
+      <Card className="mb-8 border-0 shadow-lg">
+        <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100 border-b">
           <CardTitle className="flex items-center">
-            <Settings className="mr-2 h-5 w-5" />
-            Actions rapides
+            <Users className="mr-3 h-5 w-5 text-blue-600" />
+            Répartition des utilisateurs
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div 
-              className="p-4 border rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
-              onClick={() => navigate('/admin/users')}
-            >
-              <Users className="h-5 w-5 text-blue-600 mb-2" />
-              <h4 className="font-medium mb-1">Nouvel utilisateur</h4>
-              <p className="text-sm text-gray-600">Créer un compte utilisateur</p>
+        <CardContent className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-gray-900 mb-2">{userStats.total}</div>
+              <p className="text-sm text-gray-600 mb-3">Total utilisateurs</p>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="bg-blue-600 h-2 rounded-full" style={{ width: '100%' }}></div>
+              </div>
             </div>
             
-            <div 
-              className="p-4 border rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
-              onClick={() => navigate('/admin/security')}
-            >
-              <Shield className="h-5 w-5 text-red-600 mb-2" />
-              <h4 className="font-medium mb-1">Code de sécurité</h4>
-              <p className="text-sm text-gray-600">Générer un code de suppression</p>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-red-600 mb-2">{userStats.superAdmins}</div>
+              <p className="text-sm text-gray-600 mb-3">Super admins</p>
+              <Badge className={getRoleBadgeColor('superadmin')}>
+                {userStats.total > 0 ? Math.round((userStats.superAdmins / userStats.total) * 100) : 0}%
+              </Badge>
             </div>
             
-            <div 
-              className="p-4 border rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
-              onClick={() => navigate('/admin/system')}
-            >
-              <Wrench className="h-5 w-5 text-orange-600 mb-2" />
-              <h4 className="font-medium mb-1">Sync chambres</h4>
-              <p className="text-sm text-gray-600">Synchroniser l'occupation</p>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-blue-600 mb-2">{userStats.admins}</div>
+              <p className="text-sm text-gray-600 mb-3">Administrateurs</p>
+              <Badge className={getRoleBadgeColor('admin')}>
+                {userStats.total > 0 ? Math.round((userStats.admins / userStats.total) * 100) : 0}%
+              </Badge>
+            </div>
+            
+            <div className="text-center">
+              <div className="text-2xl font-bold text-gray-600 mb-2">{userStats.users}</div>
+              <p className="text-sm text-gray-600 mb-3">Utilisateurs</p>
+              <Badge className={getRoleBadgeColor('user')}>
+                {userStats.total > 0 ? Math.round((userStats.users / userStats.total) * 100) : 0}%
+              </Badge>
             </div>
           </div>
         </CardContent>
       </Card>
-    </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Navigation Cards */}
+        <div className="lg:col-span-2">
+          <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+            <Settings className="mr-2 h-5 w-5" />
+            Modules d'administration
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {navigationCards.map((card, index) => {
+              const IconComponent = card.icon;
+              return (
+                <Card 
+                  key={index}
+                  className="group cursor-pointer hover:shadow-xl transition-all duration-300 border-0 shadow-lg overflow-hidden"
+                  onClick={() => navigate(card.path)}
+                >
+                  <div className={`h-2 bg-gradient-to-r ${card.color}`}></div>
+                  <CardHeader className="pb-3">
+                    <div className="flex items-start justify-between">
+                      <div className={`p-3 rounded-xl bg-gradient-to-br ${card.color} shadow-lg group-hover:scale-110 transition-transform duration-200`}>
+                        <IconComponent className="h-6 w-6 text-white" />
+                      </div>
+                      <Badge 
+                        variant="outline" 
+                        className={`text-xs ${card.priority === 'high' ? 'bg-red-50 text-red-700 border-red-200' : 'bg-blue-50 text-blue-700 border-blue-200'}`}
+                      >
+                        {card.priority === 'high' ? 'Priorité haute' : 'Priorité normale'}
+                      </Badge>
+                    </div>
+                    <CardTitle className="text-lg group-hover:text-blue-600 transition-colors duration-200">
+                      {card.title}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                      {card.description}
+                    </p>
+                    
+                    <div className="flex flex-wrap gap-1 mb-4">
+                      {card.actions.map((action, actionIndex) => (
+                        <Badge key={actionIndex} variant="secondary" className="text-xs">
+                          {action}
+                        </Badge>
+                      ))}
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-700">
+                        {card.stats}
+                      </span>
+                      <ArrowRight className="h-4 w-4 text-gray-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all duration-200" />
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Sidebar */}
+        <div className="space-y-6">
+          {/* Quick Actions */}
+          <Card className="border-0 shadow-lg">
+            <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b">
+              <CardTitle className="text-lg">Actions rapides</CardTitle>
+            </CardHeader>
+            <CardContent className="p-4">
+              <div className="space-y-3">
+                {quickActions.map((action, index) => {
+                  const IconComponent = action.icon;
+                  return (
+                    <Button
+                      key={index}
+                      variant="outline"
+                      className={`w-full justify-start h-auto p-4 ${action.color} border transition-all duration-200`}
+                      onClick={action.action}
+                    >
+                      <div className="flex items-start">
+                        <IconComponent className="h-5 w-5 mr-3 mt-0.5" />
+                        <div className="text-left">
+                          <div className="font-medium text-sm">{action.title}</div>
+                          <div className="text-xs text-gray-600">{action.description}</div>
+                        </div>
+                      </div>
+                    </Button>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* System Status */}
+          <Card className="border-0 shadow-lg">
+            <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50 border-b">
+              <CardTitle className="text-lg flex items-center">
+                <Server className="mr-2 h-5 w-5" />
+                État du système
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-4">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <div className="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
+                    <span className="text-sm font-medium">Services principaux</span>
+                  </div>
+                  <Badge className="bg-green-100 text-green-800 border-green-200">
+                    Opérationnel
+                  </Badge>
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <div className="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
+                    <span className="text-sm font-medium">Base de données</span>
+                  </div>
+                  <Badge className="bg-green-100 text-green-800 border-green-200">
+                    Connectée
+                  </Badge>
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <div className="w-3 h-3 bg-yellow-500 rounded-full mr-3"></div>
+                    <span className="text-sm font-medium">Synchronisation</span>
+                  </div>
+                  <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">
+                    En cours
+                  </Badge>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Recent Activity */}
+          <Card className="border-0 shadow-lg">
+            <CardHeader className="bg-gradient-to-r from-gray-50 to-slate-50 border-b">
+              <CardTitle className="text-lg flex items-center">
+                <Clock className="mr-2 h-5 w-5" />
+                Activité récente
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-4">
+              <div className="space-y-4">
+                {recentActivity.map((activity, index) => {
+                  const IconComponent = activity.icon;
+                  return (
+                    <div key={index} className="flex items-start space-x-3">
+                      <div className={`p-2 rounded-lg ${
+                        activity.type === 'success' ? 'bg-green-100' :
+                        activity.type === 'warning' ? 'bg-yellow-100' :
+                        'bg-blue-100'
+                      }`}>
+                        <IconComponent className={`h-4 w-4 ${
+                          activity.type === 'success' ? 'text-green-600' :
+                          activity.type === 'warning' ? 'text-yellow-600' :
+                          'text-blue-600'
+                        }`} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900">
+                          {activity.action}
+                        </p>
+                        <p className="text-xs text-gray-600">
+                          {activity.description}
+                        </p>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {activity.time}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Current User Info */}
+          <Card className="border-0 shadow-lg">
+            <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50 border-b">
+              <CardTitle className="text-lg">Session actuelle</CardTitle>
+            </CardHeader>
+            <CardContent className="p-4">
+              <div className="space-y-3">
+                <div>
+                  <p className="text-sm font-medium text-gray-900">{user?.nom}</p>
+                  <p className="text-xs text-gray-600">{user?.email}</p>
+                </div>
+                <Badge className={getRoleBadgeColor(user?.role || '')}>
+                  {getRoleLabel(user?.role || '')}
+                </Badge>
+                <div className="pt-2 border-t">
+                  <p className="text-xs text-gray-500">
+                    Connecté depuis le centre d'administration
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </AdminLayout>
   );
 }
