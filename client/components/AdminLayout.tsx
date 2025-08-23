@@ -211,7 +211,48 @@ export const AdminLayout = ({
       {/* Navigation Tabs */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
-          <nav className="flex space-x-2 sm:space-x-4 lg:space-x-8 overflow-x-auto py-3 sm:py-4 scrollbar-hide">
+          {/* Mobile Navigation Dropdown */}
+          <div className="md:hidden py-3">
+            <Select
+              value={location.pathname}
+              onValueChange={(value) => navigate(value)}
+            >
+              <SelectTrigger className="w-full min-h-[44px] touch-manipulation">
+                <div className="flex items-center">
+                  {adminNavigation.find(item => location.pathname === item.href)?.icon && (
+                    React.createElement(
+                      adminNavigation.find(item => location.pathname === item.href)!.icon,
+                      { className: "h-4 w-4 mr-2 text-blue-600" }
+                    )
+                  )}
+                  <SelectValue placeholder="Sélectionner une section" />
+                </div>
+              </SelectTrigger>
+              <SelectContent className="w-full">
+                {adminNavigation.map((item) => {
+                  const IconComponent = item.icon;
+                  return (
+                    <SelectItem
+                      key={item.href}
+                      value={item.href}
+                      className="min-h-[44px] touch-manipulation"
+                    >
+                      <div className="flex items-center py-2">
+                        <IconComponent className="h-4 w-4 mr-3 text-gray-600" />
+                        <div>
+                          <div className="font-medium">{item.name}</div>
+                          <div className="text-xs text-gray-500">{item.description}</div>
+                        </div>
+                      </div>
+                    </SelectItem>
+                  );
+                })}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Desktop Navigation Tabs */}
+          <nav className="hidden md:flex space-x-4 lg:space-x-8 overflow-x-auto py-4 scrollbar-hide">
             {adminNavigation.map((item) => {
               const isActive = location.pathname === item.href;
               return (
@@ -219,19 +260,14 @@ export const AdminLayout = ({
                   key={item.name}
                   onClick={() => navigate(item.href)}
                   className={cn(
-                    'flex items-center px-2 sm:px-3 lg:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium rounded-lg transition-all duration-200 whitespace-nowrap min-w-fit min-h-[44px] touch-manipulation',
+                    'flex items-center px-3 lg:px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 whitespace-nowrap min-w-fit min-h-[44px] touch-manipulation',
                     isActive
                       ? 'bg-blue-100 text-blue-700 shadow-sm'
                       : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 active:bg-gray-200'
                   )}
                 >
-                  <item.icon className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
-                  <span className="hidden xs:inline sm:inline">
-                    {item.name}
-                  </span>
-                  <span className="xs:hidden sm:hidden">
-                    {item.name.split(' ')[0]}
-                  </span>
+                  <item.icon className="mr-2 h-4 w-4 flex-shrink-0" />
+                  {item.name}
                 </button>
               );
             })}
