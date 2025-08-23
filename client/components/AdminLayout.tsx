@@ -1,4 +1,4 @@
-import React, { ReactNode, Suspense } from 'react';
+import React, { ReactNode, Suspense, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -13,6 +13,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -32,7 +39,9 @@ import {
   Home,
   UserCheck,
   LogOut,
-  Loader2
+  Loader2,
+  Menu,
+  ChevronDown
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AdminErrorBoundary } from '@/components/AdminErrorBoundary';
