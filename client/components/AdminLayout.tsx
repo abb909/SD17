@@ -163,31 +163,32 @@ export const AdminLayout = ({
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Header */}
       <header className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
+          <div className="flex justify-between items-center h-14 sm:h-16">
             {/* Left side */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 sm:space-x-4 min-w-0 flex-1">
               {showBackButton && (
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => navigate('/admin')}
-                  className="hover:bg-gray-100"
+                  className="hover:bg-gray-100 flex-shrink-0 min-h-[44px] px-2 sm:px-3"
                 >
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Administration
+                  <ArrowLeft className="h-4 w-4 mr-1 sm:mr-2" />
+                  <span className="hidden xs:inline">Administration</span>
+                  <span className="xs:hidden">Admin</span>
                 </Button>
               )}
-              <div className="hidden sm:block">
-                <div className="p-2 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg">
-                  <Settings className="h-6 w-6 text-white" />
+              <div className="hidden sm:block flex-shrink-0">
+                <div className="p-1.5 sm:p-2 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg">
+                  <Settings className="h-4 w-4 sm:h-6 sm:w-6 text-white" />
                 </div>
               </div>
-              <div>
-                <h1 className="text-lg font-bold text-gray-900">
+              <div className="min-w-0 flex-1">
+                <h1 className="text-sm sm:text-lg font-bold text-gray-900 truncate">
                   Centre d'Administration
                 </h1>
-                <p className="text-sm text-gray-500 hidden sm:block">
+                <p className="text-xs sm:text-sm text-gray-500 hidden sm:block truncate">
                   Gestion système et configuration
                 </p>
               </div>
