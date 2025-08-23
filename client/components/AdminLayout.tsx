@@ -229,25 +229,7 @@ export const AdminLayout = ({
         <div className="mb-6">
           <Breadcrumb>
             <BreadcrumbList>
-              {generateBreadcrumbs().map((crumb, index, array) => (
-                <React.Fragment key={index}>
-                  <BreadcrumbItem>
-                    {crumb.href && index < array.length - 1 ? (
-                      <BreadcrumbLink 
-                        onClick={() => navigate(crumb.href!)}
-                        className="cursor-pointer hover:text-blue-600"
-                      >
-                        {crumb.label}
-                      </BreadcrumbLink>
-                    ) : (
-                      <BreadcrumbPage className="font-medium text-gray-900">
-                        {crumb.label}
-                      </BreadcrumbPage>
-                    )}
-                  </BreadcrumbItem>
-                  {index < array.length - 1 && <BreadcrumbSeparator />}
-                </React.Fragment>
-              ))}
+              <BreadcrumbItem />
             </BreadcrumbList>
           </Breadcrumb>
         </div>
