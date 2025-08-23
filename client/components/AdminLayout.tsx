@@ -237,7 +237,7 @@ export const AdminLayout = ({
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
           {/* Mobile Navigation */}
-          <div className="md:hidden">
+          <div className="md:hidden" ref={mobileMenuRef}>
             {/* Mobile Navigation Header */}
             <div className="flex items-center justify-between py-3">
               <div className="flex items-center">
