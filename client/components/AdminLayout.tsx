@@ -314,7 +314,11 @@ export const AdminLayout = ({
 
         {/* Page Content */}
         <div className="space-y-6">
-          {children}
+          <AdminErrorBoundary>
+            <Suspense fallback={<AdminPageLoading title={title} />}>
+              {children}
+            </Suspense>
+          </AdminErrorBoundary>
         </div>
       </main>
     </div>
