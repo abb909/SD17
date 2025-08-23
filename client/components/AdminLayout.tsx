@@ -193,46 +193,6 @@ export const AdminLayout = ({
               </div>
             </div>
 
-            {/* Right side */}
-            <div className="flex items-center space-x-4">
-              <Badge variant="outline" className="hidden sm:flex bg-green-50 text-green-700 border-green-200">
-                <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                Système opérationnel
-              </Badge>
-              
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-                    <Avatar className="h-10 w-10">
-                      <AvatarFallback className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
-                        {getInitials(user?.nom || '')}
-                      </AvatarFallback>
-                    </Avatar>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56" align="end">
-                  <DropdownMenuLabel className="font-normal">
-                    <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium">{user?.nom}</p>
-                      <p className="text-xs text-muted-foreground">{user?.email}</p>
-                      <Badge className="w-fit text-xs bg-red-100 text-red-800">
-                        {getRoleLabel(user?.role || '')}
-                      </Badge>
-                    </div>
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => navigate('/')}>
-                    <Home className="mr-2 h-4 w-4" />
-                    <span>Retour à l'application</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={logout} className="text-red-600">
-                    <LogOut className="mr-2 h-4 w-4" />
-                    <span>Se déconnecter</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
           </div>
         </div>
       </header>
