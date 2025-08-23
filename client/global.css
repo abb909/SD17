@@ -296,13 +296,98 @@
     }
 
     /* Prevent zoom on input focus for iOS */
-    .mobile-dialog-container input:focus,
-    .mobile-dialog-container select:focus,
-    .mobile-dialog-container textarea:focus {
-      transform: none !important;
-      zoom: 1 !important;
+  .mobile-dialog-container input:focus,
+  .mobile-dialog-container select:focus,
+  .mobile-dialog-container textarea:focus {
+    transform: none !important;
+    zoom: 1 !important;
+  }
+}
+
+/* Admin Layout Mobile Optimizations */
+@layer utilities {
+  /* Hide scrollbars while maintaining functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Extra small breakpoint for very small devices */
+  @media (min-width: 375px) {
+    .xs\:inline {
+      display: inline;
+    }
+
+    .xs\:hidden {
+      display: none;
     }
   }
+
+  /* Touch-friendly interactive elements */
+  .touch-manipulation {
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  /* Enhanced mobile-specific classes for admin layout */
+  @media (max-width: 640px) {
+    .admin-mobile-nav {
+      font-size: 0.75rem;
+      padding: 0.375rem 0.5rem;
+    }
+
+    .admin-mobile-header {
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+    }
+
+    .admin-mobile-title {
+      font-size: 1.25rem;
+      line-height: 1.75rem;
+    }
+  }
+
+  /* Improved tap targets for mobile */
+  @media (max-width: 768px) {
+    .mobile-tap-target {
+      min-height: 44px;
+      min-width: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  /* Admin-specific responsive utilities */
+  .admin-responsive-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 640px) {
+    .admin-responsive-grid {
+      gap: 1.5rem;
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .admin-responsive-grid {
+      gap: 2rem;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+  }
+}
 
   /* Enhanced mobile modal animation */
   @media (max-width: 640px) {
