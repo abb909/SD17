@@ -255,9 +255,19 @@ export const AdminLayout = ({
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="min-h-[44px] touch-manipulation"
+                className={cn(
+                  "min-h-[44px] touch-manipulation transition-all duration-200",
+                  isMobileMenuOpen
+                    ? "bg-blue-100 text-blue-700"
+                    : "hover:bg-gray-100"
+                )}
+                aria-expanded={isMobileMenuOpen}
+                aria-label="Menu de navigation"
               >
-                <Menu className="h-4 w-4" />
+                <Menu className={cn(
+                  "h-4 w-4 transition-transform duration-200",
+                  isMobileMenuOpen ? "rotate-90" : ""
+                )} />
               </Button>
             </div>
 
