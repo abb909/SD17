@@ -211,44 +211,105 @@ export const AdminLayout = ({
       {/* Navigation Tabs */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
-          {/* Mobile Navigation Dropdown */}
-          <div className="md:hidden py-3">
-            <Select
-              value={location.pathname}
-              onValueChange={(value) => navigate(value)}
-            >
-              <SelectTrigger className="w-full min-h-[44px] touch-manipulation">
-                <div className="flex items-center">
-                  {adminNavigation.find(item => location.pathname === item.href)?.icon && (
-                    React.createElement(
-                      adminNavigation.find(item => location.pathname === item.href)!.icon,
-                      { className: "h-4 w-4 mr-2 text-blue-600" }
-                    )
-                  )}
-                  <SelectValue placeholder="Sélectionner une section" />
-                </div>
-              </SelectTrigger>
-              <SelectContent className="w-full">
-                {adminNavigation.map((item) => {
-                  const IconComponent = item.icon;
-                  return (
-                    <SelectItem
-                      key={item.href}
-                      value={item.href}
-                      className="min-h-[44px] touch-manipulation"
-                    >
-                      <div className="flex items-center py-2">
-                        <IconComponent className="h-4 w-4 mr-3 text-gray-600" />
-                        <div>
+          {/* Mobile Navigation */}
+          <div className="md:hidden">
+            {/* Mobile Navigation Header */}
+            <div className="flex items-center justify-between py-3">
+              <div className="flex items-center">
+                {adminNavigation.find(item => location.pathname === item.href)?.icon && (
+                  React.createElement(
+                    adminNavigation.find(item => location.pathname === item.href)!.icon,
+                    { className: "h-4 w-4 mr-2 text-blue-600" }
+                  )
+                )}
+                <span className="font-medium text-gray-900">
+                  {adminNavigation.find(item => location.pathname === item.href)?.name || 'Navigation'}
+                </span>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="min-h-[44px] touch-manipulation"
+              >
+                <Menu className="h-4 w-4" />
+              </Button>
+            </div>
+
+            {/* Mobile Navigation Dropdown Menu */}
+            {isMobileMenuOpen && (
+              <div className="pb-3 border-t border-gray-100">
+                <div className="grid gap-1 pt-3">
+                  {adminNavigation.map((item) => {
+                    const isActive = location.pathname === item.href;
+                    const IconComponent = item.icon;
+                    return (
+                      <button
+                        key={item.href}
+                        onClick={() => {
+                          navigate(item.href);
+                          setIsMobileMenuOpen(false);
+                        }}
+                        className={cn(
+                          'flex items-center w-full px-3 py-3 text-left text-sm rounded-lg transition-all duration-200 min-h-[44px] touch-manipulation',
+                          isActive
+                            ? 'bg-blue-100 text-blue-700 shadow-sm'
+                            : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 active:bg-gray-200'
+                        )}
+                      >
+                        <IconComponent className="h-4 w-4 mr-3 flex-shrink-0" />
+                        <div className="flex-1">
                           <div className="font-medium">{item.name}</div>
-                          <div className="text-xs text-gray-500">{item.description}</div>
+                          <div className="text-xs text-gray-500 mt-0.5">{item.description}</div>
                         </div>
-                      </div>
-                    </SelectItem>
-                  );
-                })}
-              </SelectContent>
-            </Select>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Alternative: Mobile Select Dropdown (commented out) */}
+            {/*
+            <div className="py-3">
+              <Select
+                value={location.pathname}
+                onValueChange={(value) => navigate(value)}
+              >
+                <SelectTrigger className="w-full min-h-[44px] touch-manipulation">
+                  <div className="flex items-center">
+                    {adminNavigation.find(item => location.pathname === item.href)?.icon && (
+                      React.createElement(
+                        adminNavigation.find(item => location.pathname === item.href)!.icon,
+                        { className: "h-4 w-4 mr-2 text-blue-600" }
+                      )
+                    )}
+                    <SelectValue placeholder="Sélectionner une section" />
+                  </div>
+                </SelectTrigger>
+                <SelectContent className="w-full">
+                  {adminNavigation.map((item) => {
+                    const IconComponent = item.icon;
+                    return (
+                      <SelectItem
+                        key={item.href}
+                        value={item.href}
+                        className="min-h-[44px] touch-manipulation"
+                      >
+                        <div className="flex items-center py-2">
+                          <IconComponent className="h-4 w-4 mr-3 text-gray-600" />
+                          <div>
+                            <div className="font-medium">{item.name}</div>
+                            <div className="text-xs text-gray-500">{item.description}</div>
+                          </div>
+                        </div>
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
+            </div>
+            */}
           </div>
 
           {/* Desktop Navigation Tabs */}
