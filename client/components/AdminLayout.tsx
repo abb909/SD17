@@ -55,16 +55,17 @@ interface AdminLayoutProps {
   breadcrumbs?: Array<{ label: string; href?: string }>;
 }
 
-export const AdminLayout = ({ 
-  children, 
-  title, 
-  subtitle, 
+export const AdminLayout = ({
+  children,
+  title,
+  subtitle,
   showBackButton = true,
-  breadcrumbs 
+  breadcrumbs
 }: AdminLayoutProps) => {
   const { user, logout, isSuperAdmin } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Redirect if not super admin
   if (!isSuperAdmin) {
