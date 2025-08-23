@@ -25,6 +25,7 @@ import { ArrowLeft, Database, Plus, Package, AlertCircle } from 'lucide-react';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import ArticleNamesManagement from '@/components/ArticleNamesManagement';
+import SupervisorManagement from '@/components/SupervisorManagement';
 import { useToast } from '@/hooks/use-toast';
 import { createSampleArticles } from '@/utils/createSampleArticles';
 
@@ -101,7 +102,7 @@ export default function AdminContentManagement() {
 
       setArticleForm({
         name: '',
-        defaultUnit: 'pièces',
+        defaultUnit: 'pi��ces',
         description: ''
       });
       setIsFloatingAddArticleOpen(false);
