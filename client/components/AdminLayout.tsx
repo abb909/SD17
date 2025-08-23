@@ -1,4 +1,4 @@
-import React, { ReactNode, Suspense, useState } from 'react';
+import React, { ReactNode, Suspense, useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
