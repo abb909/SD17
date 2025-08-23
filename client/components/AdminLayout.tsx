@@ -263,7 +263,7 @@ export const AdminLayout = ({
 
             {/* Mobile Navigation Dropdown Menu */}
             {isMobileMenuOpen && (
-              <div className="pb-3 border-t border-gray-100">
+              <div className="pb-3 border-t border-gray-100 animate-in slide-in-from-top-2 duration-200">
                 <div className="grid gap-1 pt-3">
                   {adminNavigation.map((item) => {
                     const isActive = location.pathname === item.href;
