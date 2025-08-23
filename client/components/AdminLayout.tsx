@@ -230,9 +230,9 @@ export const AdminLayout = ({
       </div>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-6 lg:py-8">
         {/* Breadcrumbs */}
-        <div className="mb-6">
+        <div className="mb-4 sm:mb-6">
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem />
@@ -241,24 +241,29 @@ export const AdminLayout = ({
         </div>
 
         {/* Page Header */}
-        <div className="mb-8">
-          <div className="flex items-center space-x-4">
-            <div className="p-3 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl shadow-lg">
+        <div className="mb-6 sm:mb-8">
+          <div className="flex items-center space-x-3 sm:space-x-4">
+            <div className="p-2 sm:p-3 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg sm:rounded-xl shadow-lg flex-shrink-0">
               {adminNavigation.find(item => location.pathname === item.href)?.icon && (
                 React.createElement(
                   adminNavigation.find(item => location.pathname === item.href)!.icon,
-                  { className: "h-6 w-6 text-white" }
+                  { className: "h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-white" }
                 )
               )}
             </div>
-            <div className="text-3xl font-bold text-gray-900">
-              {title}
+            <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 leading-tight min-w-0 flex-1">
+              <span className="block sm:inline">{title}</span>
+              {subtitle && (
+                <p className="text-sm sm:text-base text-gray-600 font-normal mt-1 sm:mt-0 sm:ml-2 sm:inline-block">
+                  {subtitle}
+                </p>
+              )}
             </div>
           </div>
         </div>
 
         {/* Page Content */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           <AdminErrorBoundary>
             <Suspense fallback={<AdminPageLoading title={title} />}>
               {children}
