@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, Suspense } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -31,9 +31,12 @@ import {
   ArrowLeft,
   Home,
   UserCheck,
-  LogOut
+  LogOut,
+  Loader2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { AdminErrorBoundary } from '@/components/AdminErrorBoundary';
+import { AdminPageLoading } from '@/components/AdminLoadingStates';
 
 interface AdminLayoutProps {
   children: ReactNode;
