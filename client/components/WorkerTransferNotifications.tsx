@@ -167,19 +167,76 @@ export default function WorkerTransferNotifications() {
         roomAssignments: roomAssignments
       });
 
-      // Update each worker
+      // Update each worker with proper history preservation
       for (const workerInfo of selectedTransfer.workers) {
         const assignment = roomAssignments[workerInfo.workerId];
         const workerRef = doc(db, 'workers', workerInfo.workerId);
-        
-        // Preserve work history
-        // Note: This would need to be expanded with proper history preservation logic
+
+        // Get current worker data to preserve history
+        const workerDoc = await getDoc(workerRef);
+        if (!workerDoc.exists()) continue;
+
+        const currentWorker = workerDoc.data() as any;
+        const transferDate = new Date().toISOString().split('T')[0];
+
+        // Preserve existing work history and properly close current period
+        const existingHistory = currentWorker.workHistory || [];
+        let completeHistory = [...existingHistory];
+
+        // Check if the main worker's current period is already in work history
+        const mainPeriodInHistory = existingHistory.some((period: any) =>
+          period.dateEntree === currentWorker.dateEntree
+        );
+
+        // If main period is not in history, add it with proper closure
+        if (!mainPeriodInHistory && currentWorker.dateEntree) {
+          const mainPeriod = {
+            id: `transfer_period_${Date.now()}_${workerInfo.workerId}`,
+            dateEntree: currentWorker.dateEntree,
+            dateSortie: transferDate, // Exit date = transfer date
+            motif: 'transfert', // Set transfer as reason
+            chambre: currentWorker.chambre,
+            secteur: currentWorker.secteur,
+            fermeId: currentWorker.fermeId
+          };
+          completeHistory.push(mainPeriod);
+        }
+
+        // Ensure all previous periods are properly closed
+        const closedHistory = completeHistory.map((period: any) => {
+          if (!period.dateSortie && period.dateEntree !== transferDate) {
+            return {
+              ...period,
+              dateSortie: transferDate, // Close with transfer date
+              motif: period.motif || 'transfert'
+            };
+          }
+          return period;
+        });
+
+        // Sort history by entry date
+        closedHistory.sort((a: any, b: any) => new Date(a.dateEntree).getTime() - new Date(b.dateEntree).getTime());
+
+        // Update worker with preserved history and new farm assignment
         batch.update(workerRef, {
           fermeId: selectedTransfer.toFermeId,
           chambre: assignment.chambre,
           secteur: assignment.secteur,
-          dateEntree: new Date().toISOString().split('T')[0], // New entry date
-          statut: 'actif'
+          dateEntree: transferDate, // Entry date = transfer date (same as exit date from previous farm)
+          dateSortie: null, // Clear exit date for new period
+          motif: null, // Clear exit motif for new period
+          statut: 'actif',
+          returnCount: (currentWorker.returnCount || 0) + 1,
+          workHistory: [
+            ...closedHistory, // Keep all previous history
+            {
+              id: `transfer_entry_${Date.now()}_${workerInfo.workerId}`,
+              dateEntree: transferDate, // Entry date = transfer date
+              chambre: assignment.chambre,
+              secteur: assignment.secteur,
+              fermeId: selectedTransfer.toFermeId
+            }
+          ]
         });
 
         // Update room occupancy
