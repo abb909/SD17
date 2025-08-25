@@ -233,6 +233,9 @@ export default function AdminDashboard() {
         })}
       </div>
 
+      {/* Worker Transfer Notifications */}
+      <WorkerTransferNotifications />
+
       {/* User Roles Breakdown */}
       <Card className="mb-8 border-0 shadow-lg">
         <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100 border-b">
