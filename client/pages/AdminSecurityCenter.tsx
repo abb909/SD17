@@ -432,7 +432,7 @@ export default function AdminSecurityCenter() {
                     </Button>
                     <Button
                       onClick={generateSecurityCode}
-                      disabled={loading || maxDeletions < 1}
+                      disabled={loading || maxDeletions < 1 || !isValidExpirationPeriod()}
                       className="bg-indigo-600 hover:bg-indigo-700"
                     >
                       {loading ? 'Génération...' : 'Générer le code'}
