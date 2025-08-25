@@ -572,39 +572,51 @@ export default function WorkerTransferNotifications() {
                         </Badge>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-4">
                         <div>
-                          <Label>Chambre</Label>
+                          <Label>Secteur</Label>
                           <Select
-                            value={roomAssignments[worker.workerId]?.chambre || ''}
-                            onValueChange={(value) => handleUpdateRoomAssignment(worker.workerId, 'chambre', value)}
+                            value={selectedSectors[worker.workerId] || ''}
+                            onValueChange={(value) => handleSectorSelection(worker.workerId, value)}
                           >
                             <SelectTrigger>
-                              <SelectValue placeholder="Sélectionner une chambre" />
+                              <SelectValue placeholder="Sélectionner un secteur" />
                             </SelectTrigger>
                             <SelectContent>
-                              {availableRooms.map((room) => (
-                                <SelectItem key={room.id} value={room.numero}>
-                                  <div className="flex items-center justify-between w-full">
-                                    <span>Chambre {room.numero}</span>
-                                    <span className="text-xs text-gray-500 ml-2">
-                                      ({room.occupantsActuels}/{room.capaciteTotale})
-                                    </span>
-                                  </div>
+                              {getAvailableSectors(worker.sexe).map((secteur) => (
+                                <SelectItem key={secteur} value={secteur}>
+                                  {secteur}
                                 </SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
                         </div>
 
-                        <div>
-                          <Label>Secteur</Label>
-                          <Input
-                            placeholder="Entrer le secteur"
-                            value={roomAssignments[worker.workerId]?.secteur || ''}
-                            onChange={(e) => handleUpdateRoomAssignment(worker.workerId, 'secteur', e.target.value)}
-                          />
-                        </div>
+                        {selectedSectors[worker.workerId] && (
+                          <div>
+                            <Label>Chambre</Label>
+                            <Select
+                              value={roomAssignments[worker.workerId]?.chambre || ''}
+                              onValueChange={(value) => handleUpdateRoomAssignment(worker.workerId, 'chambre', value)}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Sélectionner une chambre" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {getRoomsInSector(worker.sexe, selectedSectors[worker.workerId]).map((room) => (
+                                  <SelectItem key={room.id} value={room.numero}>
+                                    <div className="flex items-center justify-between w-full">
+                                      <span>Chambre {room.numero}</span>
+                                      <span className="text-xs text-gray-500 ml-2">
+                                        ({room.occupantsActuels}/{room.capaciteTotale})
+                                      </span>
+                                    </div>
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        )}
                       </div>
                     </div>
                   );
