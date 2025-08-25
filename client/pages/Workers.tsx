@@ -1425,7 +1425,7 @@ export default function Workers() {
 
       // Success notification
       setTimeout(() => {
-        alert(`✅ Ouvrier réactivé: ${existingWorkerByCIN.nom} a été réactivé avec succès et ajouté à son historique.`);
+        alert(`✅ Ouvrier réactivé: ${existingWorkerByCIN.nom} a été réactiv�� avec succès et ajouté à son historique.`);
       }, 100);
 
     } catch (error: any) {
@@ -2353,6 +2353,108 @@ export default function Workers() {
 
     // Clear selection after export
     clearSelection();
+  };
+
+  const handleBulkTransfer = () => {
+    if (selectedWorkers.size === 0) return;
+    setIsTransferDialogOpen(true);
+  };
+
+  const handleCreateWorkerTransfer = async () => {
+    if (selectedWorkers.size === 0 || !transferFormData.toFermeId) return;
+
+    try {
+      setLoading(true);
+
+      const selectedWorkersArray = allWorkers.filter(w => selectedWorkers.has(w.id));
+      const toFerme = fermes.find(f => f.id === transferFormData.toFermeId);
+      const fromFerme = fermes.find(f => f.id === user?.fermeId);
+
+      if (!toFerme || !fromFerme) {
+        toast({
+          title: "Erreur",
+          description: "Ferme de destination non trouvée.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Create worker transfer document
+      const workerTransfer: Omit<WorkerTransfer, 'id'> = {
+        fromFermeId: user?.fermeId || '',
+        fromFermeName: fromFerme.nom,
+        toFermeId: transferFormData.toFermeId,
+        toFermeName: toFerme.nom,
+        workers: selectedWorkersArray.map(worker => ({
+          workerId: worker.id,
+          workerName: worker.nom,
+          matricule: worker.matricule,
+          sexe: worker.sexe,
+          currentChambre: worker.chambre,
+          currentSecteur: worker.secteur
+        })),
+        status: 'pending',
+        createdAt: new Date(),
+        transferredBy: user?.uid || '',
+        transferredByName: user?.nom || user?.email || '',
+        notes: transferFormData.notes,
+        priority: transferFormData.priority,
+        trackingNumber: `WT-${Date.now()}`
+      };
+
+      // Add to Firestore
+      const { addDoc, collection } = await import('firebase/firestore');
+      const transferDocRef = await addDoc(collection(db, 'worker_transfers'), workerTransfer);
+
+      // Create notification for receiving farm admin
+      const notification = {
+        transferId: transferDocRef.id,
+        type: 'incoming_worker_transfer',
+        fromFermeId: user?.fermeId || '',
+        fromFermeName: fromFerme.nom,
+        toFermeId: transferFormData.toFermeId,
+        toFermeName: toFerme.nom,
+        workers: selectedWorkersArray.map(worker => ({
+          workerId: worker.id,
+          workerName: worker.nom,
+          matricule: worker.matricule,
+          sexe: worker.sexe
+        })),
+        workerCount: selectedWorkers.size,
+        message: `Transfert de ${selectedWorkers.size} ouvrier(s) de ${fromFerme.nom} vers ${toFerme.nom}`,
+        status: 'unread',
+        createdAt: new Date(),
+        userId: '',
+        requiresAction: true,
+        priority: transferFormData.priority
+      };
+
+      await addDoc(collection(db, 'worker_transfer_notifications'), notification);
+
+      toast({
+        title: "Transfert créé",
+        description: `Transfert de ${selectedWorkers.size} ouvrier(s) envoyé à ${toFerme.nom}. En attente de confirmation.`,
+      });
+
+      // Reset form and close dialog
+      setTransferFormData({
+        toFermeId: '',
+        notes: '',
+        priority: 'medium'
+      });
+      setIsTransferDialogOpen(false);
+      clearSelection();
+
+    } catch (error: any) {
+      console.error('Error creating worker transfer:', error);
+      toast({
+        title: "Erreur",
+        description: "Erreur lors de la création du transfert.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const getStatusBadge = (worker: Worker) => {
