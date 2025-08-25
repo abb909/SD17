@@ -769,12 +769,6 @@ export default function Dashboard() {
         )}
       </div>
 
-      {/* Worker Transfer Notifications */}
-      <WorkerTransferNotifications />
-
-      {/* Worker Transfer Status */}
-      <WorkerTransferStatus />
-
       {/* Gender Filter for Regular Admin */}
       <Card>
         <CardHeader>
