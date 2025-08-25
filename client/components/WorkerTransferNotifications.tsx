@@ -285,6 +285,36 @@ export default function WorkerTransferNotifications() {
 
       await batch.commit();
 
+      // Send notification to source farm admin about rejection
+      try {
+        const sourceAdmins = users?.filter(u =>
+          u.fermeId === selectedTransfer.fromFermeId &&
+          (u.role === 'admin' || u.role === 'superadmin')
+        ) || [];
+
+        for (const admin of sourceAdmins) {
+          await sendNotification({
+            type: 'worker_transfer_rejected',
+            title: 'Transfert d\'ouvriers rejeté',
+            message: `Le transfert de ${selectedTransfer.workers.length} ouvrier(s) vers ${selectedTransfer.toFermeName} a été rejeté. Raison: ${rejectionReason || 'Non spécifiée'}`,
+            recipientId: admin.uid,
+            priority: 'high',
+            fermeId: selectedTransfer.fromFermeId,
+            createdAt: new Date(),
+            read: false,
+            data: {
+              transferId: selectedTransfer.id,
+              workerCount: selectedTransfer.workers.length,
+              destinationFarm: selectedTransfer.toFermeName,
+              rejectionReason: rejectionReason
+            }
+          });
+        }
+        console.log(`✅ Sent rejection notification to ${sourceAdmins.length} admin(s) at ${selectedTransfer.fromFermeName}`);
+      } catch (notificationError) {
+        console.error('❌ Error sending rejection notification:', notificationError);
+      }
+
       toast({
         title: "Transfert rejeté",
         description: "Le transfert a été rejeté.",
