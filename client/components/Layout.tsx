@@ -136,6 +136,13 @@ export const Layout = ({ children }: LayoutProps) => {
       notificationCount: 0
     },
     {
+      name: 'Transferts',
+      href: '/transferts',
+      icon: ArrowRightLeft,
+      show: isSuperAdmin || isAdmin, // Show only to admins who can manage transfers
+      notificationCount: 0
+    },
+    {
       name: 'Stock',
       href: '/stock',
       icon: Package,
