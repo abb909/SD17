@@ -126,13 +126,16 @@ export default function WorkerTransferNotifications() {
     setSelectedTransfer(transfer);
     // Initialize room assignments
     const initialAssignments: {[workerId: string]: {chambre: string; secteur: string}} = {};
+    const initialSectors: {[workerId: string]: string} = {};
     transfer.workers.forEach(worker => {
       initialAssignments[worker.workerId] = {
         chambre: '',
         secteur: ''
       };
+      initialSectors[worker.workerId] = '';
     });
     setRoomAssignments(initialAssignments);
+    setSelectedSectors(initialSectors);
     setShowConfirmDialog(true);
   };
 
