@@ -46,6 +46,23 @@ export default function AdminSecurityCenter() {
   const [expirationValue, setExpirationValue] = useState<number>(24);
   const [expirationUnit, setExpirationUnit] = useState<'hours' | 'days' | 'weeks' | 'months'>('hours');
 
+  // Helper function to get max values for each unit
+  const getMaxValueForUnit = (unit: string) => {
+    switch (unit) {
+      case 'hours': return 8760; // 1 year in hours
+      case 'days': return 365;   // 1 year
+      case 'weeks': return 52;   // 1 year
+      case 'months': return 12;  // 1 year
+      default: return 24;
+    }
+  };
+
+  // Helper function to validate expiration period
+  const isValidExpirationPeriod = () => {
+    const maxValue = getMaxValueForUnit(expirationUnit);
+    return expirationValue >= 1 && expirationValue <= maxValue;
+  };
+
   // Security code management states
   const [securityCodeInfo, setSecurityCodeInfo] = useState<{
     code: string;
