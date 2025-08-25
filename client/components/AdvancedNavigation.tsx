@@ -44,6 +44,7 @@ import {
   History,
   Bookmark,
   ChevronRight,
+  ArrowRightLeft,
   X
 } from 'lucide-react';
 
