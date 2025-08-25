@@ -120,7 +120,12 @@ export default function AdminSecurityCenter() {
         isUsed: false,
         sharedWith: [],
         maxDeletions,
-        deletionsUsed: 0
+        deletionsUsed: 0,
+        expirationValue,
+        expirationUnit,
+        expirationDescription: `${expirationValue} ${expirationUnit === 'hours' ? 'heure(s)' :
+          expirationUnit === 'days' ? 'jour(s)' :
+          expirationUnit === 'weeks' ? 'semaine(s)' : 'mois'}`
       };
 
       const docRef = await addDoc(collection(db, 'bulkDeletionCodes'), codeData);
