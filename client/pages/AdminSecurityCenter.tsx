@@ -801,8 +801,9 @@ export default function AdminSecurityCenter() {
               <h4 className="font-medium text-gray-900 mb-2">Codes de sécurité</h4>
               <ul className="text-sm text-gray-600 space-y-1">
                 <li>• Générés automatiquement avec 6 chiffres</li>
-                <li>• Valides pendant 24 heures maximum</li>
+                <li>• Période d'expiration configurable (heures, jours, semaines, mois)</li>
                 <li>• Usage unique - se désactivent après utilisation</li>
+                <li>• Limite de suppressions personnalisable</li>
                 <li>• Traçabilité complète des utilisations</li>
               </ul>
             </div>
