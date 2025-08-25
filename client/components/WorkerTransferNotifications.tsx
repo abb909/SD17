@@ -34,15 +34,16 @@ import {
   Send
 } from 'lucide-react';
 import { WorkerTransfer, WorkerTransferNotification, Room, Worker } from '@shared/types';
-import { 
-  collection, 
-  query, 
-  where, 
-  onSnapshot, 
-  doc, 
-  updateDoc, 
+import {
+  collection,
+  query,
+  where,
+  onSnapshot,
+  doc,
+  getDoc,
+  updateDoc,
   writeBatch,
-  serverTimestamp 
+  serverTimestamp
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
