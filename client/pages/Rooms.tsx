@@ -681,6 +681,7 @@ export default function Rooms() {
                       numero: '',
                       fermeId: user?.fermeId || '',
                       genre: 'hommes',
+                      secteur: '',
                       capaciteTotale: 4
                     });
                   }}
