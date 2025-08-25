@@ -359,6 +359,43 @@ export default function AdminSecurityCenter() {
                       Ce code pourra supprimer au maximum {maxDeletions} ouvrier(s)
                     </p>
                   </div>
+
+                  <div className="space-y-2">
+                    <Label>Période d'expiration</Label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <Input
+                          type="number"
+                          min="1"
+                          max="365"
+                          value={expirationValue}
+                          onChange={(e) => setExpirationValue(parseInt(e.target.value) || 1)}
+                          placeholder="24"
+                        />
+                      </div>
+                      <div>
+                        <Select
+                          value={expirationUnit}
+                          onValueChange={(value: 'hours' | 'days' | 'weeks' | 'months') => setExpirationUnit(value)}
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="hours">Heure(s)</SelectItem>
+                            <SelectItem value="days">Jour(s)</SelectItem>
+                            <SelectItem value="weeks">Semaine(s)</SelectItem>
+                            <SelectItem value="months">Mois</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    <p className="text-xs text-gray-500">
+                      Le code expirera dans {expirationValue} {expirationUnit === 'hours' ? 'heure(s)' :
+                        expirationUnit === 'days' ? 'jour(s)' :
+                        expirationUnit === 'weeks' ? 'semaine(s)' : 'mois'}
+                    </p>
+                  </div>
                   <Alert className="border-orange-200 bg-orange-50">
                     <AlertCircle className="h-4 w-4" />
                     <AlertDescription className="text-orange-800 text-sm">
