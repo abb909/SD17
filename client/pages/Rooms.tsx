@@ -1186,6 +1186,17 @@ export default function Rooms() {
             </div>
 
             <div className="space-y-2">
+              <Label htmlFor="edit-secteur">Secteur</Label>
+              <Input
+                id="edit-secteur"
+                value={formData.secteur}
+                onChange={(e) => setFormData(prev => ({ ...prev, secteur: e.target.value }))}
+                placeholder="Ex: Bloc A, Secteur Nord..."
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
               <Label htmlFor="edit-capacite">Capacité maximale</Label>
               <Input
                 id="edit-capacite"
