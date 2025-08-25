@@ -2469,7 +2469,6 @@ export default function Statistics() {
       'Nom': worker.nom,
       'Âge': worker.age,
       'Sexe': worker.sexe === 'homme' ? 'Homme' : 'Femme',
-      'Téléphone': worker.telephone || '',
       'Chambre': worker.chambre || '',
       'Date d\'entrée': worker.dateEntree ? new Date(worker.dateEntree).toLocaleDateString('fr-FR') : '',
       'Date de sortie': worker.dateSortie ? new Date(worker.dateSortie).toLocaleDateString('fr-FR') : '',
