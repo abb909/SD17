@@ -256,7 +256,7 @@ export default function WorkerTransferNotifications() {
         if (room) {
           const roomRef = doc(db, 'rooms', room.id);
           batch.update(roomRef, {
-            listeOccupants: [...room.listeOccupants, workerInfo.workerId],
+            listeOccupants: [...room.listeOccupants, workerData.workerId],
             occupantsActuels: room.occupantsActuels + 1,
             updatedAt: serverTimestamp()
           });
