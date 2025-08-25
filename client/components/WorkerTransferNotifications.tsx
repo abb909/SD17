@@ -50,6 +50,8 @@ export default function WorkerTransferNotifications() {
   const { user } = useAuth();
   const { data: rooms } = useFirestore<Room>('rooms');
   const { updateDocument: updateWorker } = useFirestore<Worker>('workers');
+  const { data: users } = useFirestore('users');
+  const { sendNotification } = useNotifications();
   const { toast } = useToast();
 
   const [pendingTransfers, setPendingTransfers] = useState<WorkerTransfer[]>([]);
