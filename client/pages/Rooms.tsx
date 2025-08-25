@@ -447,6 +447,7 @@ export default function Rooms() {
       const updatedData = {
         numero: formData.numero,
         genre: formData.genre,
+        secteur: formData.secteur.trim() || `Secteur ${formData.genre === 'hommes' ? 'Hommes' : 'Femmes'}`,
         capaciteTotale: formData.capaciteTotale,
         // Keep existing occupants data
         occupantsActuels: editingRoom.occupantsActuels,
