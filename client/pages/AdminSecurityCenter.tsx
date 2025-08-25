@@ -42,6 +42,10 @@ export default function AdminSecurityCenter() {
   const [maxDeletions, setMaxDeletions] = useState<number>(10);
   const [showGenerateDialog, setShowGenerateDialog] = useState(false);
 
+  // Expiration period settings
+  const [expirationValue, setExpirationValue] = useState<number>(24);
+  const [expirationUnit, setExpirationUnit] = useState<'hours' | 'days' | 'weeks' | 'months'>('hours');
+
   // Security code management states
   const [securityCodeInfo, setSecurityCodeInfo] = useState<{
     code: string;
