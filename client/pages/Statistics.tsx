@@ -2509,21 +2509,38 @@ export default function Statistics() {
 
     // Prepare resume data
     const resumeData = [
-      ['M��trique', 'Valeur'],
+      // Header
+      ['RAPPORT DE SUPERVISION', ''],
+      ['', ''],
+
+      // Supervisor Information Section
+      ['INFORMATIONS DU SUPERVISEUR', ''],
       ['Nom du superviseur', supervisor.nom],
-      ['Entreprise', supervisor.company || ''],
+      ['Entreprise', supervisor.company || '-'],
+      ['Date de génération', new Date().toLocaleDateString('fr-FR')],
+      ['', ''],
+
+      // Statistics Overview Section
+      ['APERÇU GÉNÉRAL', ''],
       ['Total ouvriers gérés', supervisorWorkers.length.toString()],
       ['Ouvriers actifs', activeSupervisorWorkers.length.toString()],
       ['Ouvriers sortis', (supervisorWorkers.length - activeSupervisorWorkers.length).toString()],
+      ['Taux de rétention', `${activeSupervisorWorkers.length > 0 ? Math.round((activeSupervisorWorkers.length / supervisorWorkers.length) * 100) : 0}%`],
+      ['', ''],
+
+      // Demographics Section
+      ['DÉMOGRAPHIE', ''],
       ['Âge moyen des ouvriers', `${averageAge} ans`],
       ['Nombre d\'hommes', maleCount.toString()],
       ['Nombre de femmes', femaleCount.toString()],
       ['Répartition hommes/femmes', `${Math.round((maleCount / Math.max(activeSupervisorWorkers.length, 1)) * 100)}% / ${Math.round((femaleCount / Math.max(activeSupervisorWorkers.length, 1)) * 100)}%`],
+      ['', ''],
+
+      // Duration Analysis Section
+      ['ANALYSE DES DURÉES', ''],
       ['Durée moyenne ouvriers actifs', `${averageActiveDuration} jours`],
-      ['Durée moyenne ouvriers actifs + sortis', `${averageAllDuration} jours`],
-      ['Durée moyenne de séjour (sortis)', `${averageStay} jours`],
-      ['Taux de rétention', `${activeSupervisorWorkers.length > 0 ? Math.round((activeSupervisorWorkers.length / supervisorWorkers.length) * 100) : 0}%`],
-      ['Date de génération', new Date().toLocaleDateString('fr-FR')]
+      ['Durée moyenne ouvriers sortis', `${averageStay} jours`],
+      ['Durée moyenne générale (tous)', `${averageAllDuration} jours`]
     ];
 
     // Create workbook
@@ -2795,7 +2812,7 @@ export default function Statistics() {
             />
 
             <KPICard
-              title="Rétention"
+              title="R��tention"
               value={`${statistics.retentionRate}%`}
               subtitle="Taux de fidélisation"
               icon={Target}
