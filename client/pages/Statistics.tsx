@@ -2495,6 +2495,15 @@ export default function Statistics() {
     });
     const averageStay = stayDurations.length > 0 ? Math.round(stayDurations.reduce((sum, days) => sum + days, 0) / stayDurations.length) : 0;
 
+    // Calculate average duration for active workers (from entry date to current date)
+    const activeWorkersWithEntryDate = activeSupervisorWorkers.filter(w => w.dateEntree);
+    const activeDurations = activeWorkersWithEntryDate.map(w => {
+      const entryDate = new Date(w.dateEntree);
+      const currentDate = new Date();
+      return Math.floor((currentDate.getTime() - entryDate.getTime()) / (1000 * 60 * 60 * 24));
+    });
+    const averageActiveDuration = activeDurations.length > 0 ? Math.round(activeDurations.reduce((sum, days) => sum + days, 0) / activeDurations.length) : 0;
+
     // Prepare resume data
     const resumeData = [
       ['Métrique', 'Valeur'],
