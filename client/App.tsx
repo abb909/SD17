@@ -80,6 +80,7 @@ import Rooms from "./pages/Rooms";
 import Fermes from "./pages/Fermes";
 import Stock from "./pages/Stock";
 import Statistics from "./pages/Statistics";
+import Transfers from "./pages/Transfers";
 import AdminTools from "./pages/AdminTools";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminUserManagement from "./pages/AdminUserManagement";
@@ -233,6 +234,11 @@ const AppRoutes = () => {
       <Route path="/chambres" element={
         <ProtectedRoute>
           <Rooms />
+        </ProtectedRoute>
+      } />
+      <Route path="/transferts" element={
+        <ProtectedRoute>
+          <Transfers />
         </ProtectedRoute>
       } />
       <Route path="/stock" element={

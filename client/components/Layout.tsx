@@ -33,6 +33,7 @@ import {
   BedDouble,
   BarChart3,
   Package,
+  ArrowRightLeft,
   X
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -132,6 +133,13 @@ export const Layout = ({ children }: LayoutProps) => {
       href: '/chambres',
       icon: BedDouble,
       show: isSuperAdmin || isAdmin || isUser, // Show to all except when no role
+      notificationCount: 0
+    },
+    {
+      name: 'Transferts',
+      href: '/transferts',
+      icon: ArrowRightLeft,
+      show: isSuperAdmin || isAdmin, // Show only to admins who can manage transfers
       notificationCount: 0
     },
     {

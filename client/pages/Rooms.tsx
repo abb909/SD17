@@ -74,6 +74,7 @@ export default function Rooms() {
     numero: '',
     fermeId: user?.fermeId || '',
     genre: 'hommes' as 'hommes' | 'femmes',
+    secteur: '',
     capaciteTotale: 4,
     occupantsActuels: 0,
     listeOccupants: [] as string[]
@@ -83,6 +84,7 @@ export default function Rooms() {
     numero: '',
     fermeId: user?.fermeId || '',
     genre: 'hommes' as 'hommes' | 'femmes',
+    secteur: '',
     capaciteTotale: 4
   });
 
@@ -189,7 +191,7 @@ export default function Rooms() {
       console.log('✅ Room occupancy synchronized successfully');
       await refetchRooms(); // Refresh the room data
     } catch (error) {
-      console.error('❌ Room occupancy sync failed:', error);
+      console.error('�� Room occupancy sync failed:', error);
     } finally {
       setSyncingRooms(false);
     }
@@ -373,6 +375,7 @@ export default function Rooms() {
         numero: addFormData.numero.trim(),
         fermeId: addFormData.fermeId,
         genre: addFormData.genre,
+        secteur: addFormData.secteur.trim() || `Secteur ${addFormData.genre === 'hommes' ? 'Hommes' : 'Femmes'}`, // Default sector based on gender
         capaciteTotale: addFormData.capaciteTotale,
         occupantsActuels: 0,
         listeOccupants: []
@@ -398,6 +401,7 @@ export default function Rooms() {
         numero: '',
         fermeId: user?.fermeId || '',
         genre: 'hommes',
+        secteur: '',
         capaciteTotale: 4
       });
       setIsAddDialogOpen(false);
@@ -417,6 +421,7 @@ export default function Rooms() {
       numero: room.numero,
       fermeId: room.fermeId,
       genre: room.genre,
+      secteur: room.secteur || `Secteur ${room.genre === 'hommes' ? 'Hommes' : 'Femmes'}`, // Fallback for existing rooms without secteur
       capaciteTotale: room.capaciteTotale,
       occupantsActuels: room.occupantsActuels,
       listeOccupants: room.listeOccupants
@@ -442,6 +447,7 @@ export default function Rooms() {
       const updatedData = {
         numero: formData.numero,
         genre: formData.genre,
+        secteur: formData.secteur.trim() || `Secteur ${formData.genre === 'hommes' ? 'Hommes' : 'Femmes'}`,
         capaciteTotale: formData.capaciteTotale,
         // Keep existing occupants data
         occupantsActuels: editingRoom.occupantsActuels,
@@ -469,6 +475,7 @@ export default function Rooms() {
         numero: '',
         fermeId: user?.fermeId || '',
         genre: 'hommes',
+        secteur: '',
         capaciteTotale: 4,
         occupantsActuels: 0,
         listeOccupants: []
@@ -629,6 +636,18 @@ export default function Rooms() {
                 </Select>
               </div>
               <div className="space-y-2">
+                <Label htmlFor="add-secteur">Secteur</Label>
+                <Input
+                  id="add-secteur"
+                  placeholder="Ex: Bloc A, Secteur Nord..."
+                  value={addFormData.secteur}
+                  onChange={(e) => setAddFormData(prev => ({ ...prev, secteur: e.target.value }))}
+                />
+                <p className="text-xs text-gray-500">
+                  Laissez vide pour assigner automatiquement selon le genre
+                </p>
+              </div>
+              <div className="space-y-2">
                 <Label htmlFor="add-capacite">Capacité maximale</Label>
                 <Input
                   id="add-capacite"
@@ -678,6 +697,7 @@ export default function Rooms() {
                       numero: '',
                       fermeId: user?.fermeId || '',
                       genre: 'hommes',
+                      secteur: '',
                       capaciteTotale: 4
                     });
                   }}
@@ -1163,6 +1183,17 @@ export default function Rooms() {
                   <SelectItem value="femmes">Femmes</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="edit-secteur">Secteur</Label>
+              <Input
+                id="edit-secteur"
+                value={formData.secteur}
+                onChange={(e) => setFormData(prev => ({ ...prev, secteur: e.target.value }))}
+                placeholder="Ex: Bloc A, Secteur Nord..."
+                required
+              />
             </div>
 
             <div className="space-y-2">

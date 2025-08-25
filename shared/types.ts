@@ -77,6 +77,7 @@ export interface Room {
   numero: string;
   fermeId: string;
   genre: 'hommes' | 'femmes';
+  secteur: string; // Sector assignment for structured room organization
   capaciteTotale: number;
   occupantsActuels: number;
   listeOccupants: string[];

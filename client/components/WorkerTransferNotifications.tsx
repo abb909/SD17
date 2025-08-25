@@ -34,15 +34,16 @@ import {
   Send
 } from 'lucide-react';
 import { WorkerTransfer, WorkerTransferNotification, Room, Worker } from '@shared/types';
-import { 
-  collection, 
-  query, 
-  where, 
-  onSnapshot, 
-  doc, 
-  updateDoc, 
+import {
+  collection,
+  query,
+  where,
+  onSnapshot,
+  doc,
+  getDoc,
+  updateDoc,
   writeBatch,
-  serverTimestamp 
+  serverTimestamp
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
@@ -61,6 +62,7 @@ export default function WorkerTransferNotifications() {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [rejectionReason, setRejectionReason] = useState('');
   const [roomAssignments, setRoomAssignments] = useState<{[workerId: string]: {chambre: string; secteur: string}}>({});
+  const [selectedSectors, setSelectedSectors] = useState<{[workerId: string]: string}>({});
 
   // Load pending transfers and notifications
   useEffect(() => {
@@ -103,25 +105,55 @@ export default function WorkerTransferNotifications() {
   }, [user?.fermeId]);
 
   const getAvailableRooms = (workerGender: 'homme' | 'femme') => {
-    return rooms.filter(room => 
-      room.fermeId === user?.fermeId && 
+    return rooms.filter(room =>
+      room.fermeId === user?.fermeId &&
       room.genre === (workerGender === 'homme' ? 'hommes' : 'femmes') &&
       room.occupantsActuels < room.capaciteTotale
     );
+  };
+
+  const getAvailableSectors = (workerGender: 'homme' | 'femme') => {
+    const availableRooms = getAvailableRooms(workerGender);
+    const uniqueSectors = [...new Set(availableRooms.map(room => room.secteur).filter(secteur => secteur))];
+    return uniqueSectors.sort();
+  };
+
+  const getRoomsInSector = (workerGender: 'homme' | 'femme', secteur: string) => {
+    return getAvailableRooms(workerGender).filter(room => room.secteur === secteur);
   };
 
   const handleShowConfirmDialog = (transfer: WorkerTransfer) => {
     setSelectedTransfer(transfer);
     // Initialize room assignments
     const initialAssignments: {[workerId: string]: {chambre: string; secteur: string}} = {};
+    const initialSectors: {[workerId: string]: string} = {};
     transfer.workers.forEach(worker => {
       initialAssignments[worker.workerId] = {
         chambre: '',
         secteur: ''
       };
+      initialSectors[worker.workerId] = '';
     });
     setRoomAssignments(initialAssignments);
+    setSelectedSectors(initialSectors);
     setShowConfirmDialog(true);
+  };
+
+  const handleSectorSelection = (workerId: string, secteur: string) => {
+    setSelectedSectors(prev => ({
+      ...prev,
+      [workerId]: secteur
+    }));
+
+    // Update room assignment with selected sector and clear chambre
+    setRoomAssignments(prev => ({
+      ...prev,
+      [workerId]: {
+        ...prev[workerId],
+        secteur: secteur,
+        chambre: '' // Clear room when sector changes
+      }
+    }));
   };
 
   const handleUpdateRoomAssignment = (workerId: string, field: 'chambre' | 'secteur', value: string) => {
@@ -136,10 +168,11 @@ export default function WorkerTransferNotifications() {
 
   const validateAssignments = () => {
     if (!selectedTransfer) return false;
-    
+
     return selectedTransfer.workers.every(worker => {
       const assignment = roomAssignments[worker.workerId];
-      return assignment && assignment.chambre && assignment.secteur;
+      const sectorSelected = selectedSectors[worker.workerId];
+      return assignment && assignment.chambre && assignment.secteur && sectorSelected;
     });
   };
 
@@ -155,6 +188,22 @@ export default function WorkerTransferNotifications() {
 
     try {
       setLoading(true);
+      const transferDate = new Date().toISOString().split('T')[0];
+
+      // First, fetch all worker data to preserve history
+      const workerDataPromises = selectedTransfer.workers.map(async (workerInfo) => {
+        const workerRef = doc(db, 'workers', workerInfo.workerId);
+        const workerDoc = await getDoc(workerRef);
+        return {
+          workerId: workerInfo.workerId,
+          data: workerDoc.exists() ? workerDoc.data() : null,
+          ref: workerRef
+        };
+      });
+
+      const workersData = await Promise.all(workerDataPromises);
+
+      // Now create the batch with proper history preservation
       const batch = writeBatch(db);
 
       // Update transfer document
@@ -167,19 +216,71 @@ export default function WorkerTransferNotifications() {
         roomAssignments: roomAssignments
       });
 
-      // Update each worker
-      for (const workerInfo of selectedTransfer.workers) {
-        const assignment = roomAssignments[workerInfo.workerId];
-        const workerRef = doc(db, 'workers', workerInfo.workerId);
-        
-        // Preserve work history
-        // Note: This would need to be expanded with proper history preservation logic
-        batch.update(workerRef, {
+      // Update each worker with proper history preservation
+      for (const workerData of workersData) {
+        if (!workerData.data) continue;
+
+        const assignment = roomAssignments[workerData.workerId];
+        const currentWorker = workerData.data as any;
+
+        // Preserve existing work history and properly close current period
+        const existingHistory = currentWorker.workHistory || [];
+        let completeHistory = [...existingHistory];
+
+        // Check if the main worker's current period is already in work history
+        const mainPeriodInHistory = existingHistory.some((period: any) =>
+          period.dateEntree === currentWorker.dateEntree
+        );
+
+        // If main period is not in history, add it with proper closure
+        if (!mainPeriodInHistory && currentWorker.dateEntree) {
+          const mainPeriod = {
+            id: `transfer_period_${Date.now()}_${workerData.workerId}`,
+            dateEntree: currentWorker.dateEntree,
+            dateSortie: transferDate, // Exit date = transfer date
+            motif: 'transfert', // Set transfer as reason
+            chambre: currentWorker.chambre,
+            secteur: currentWorker.secteur,
+            fermeId: currentWorker.fermeId
+          };
+          completeHistory.push(mainPeriod);
+        }
+
+        // Ensure all previous periods are properly closed
+        const closedHistory = completeHistory.map((period: any) => {
+          if (!period.dateSortie && period.dateEntree !== transferDate) {
+            return {
+              ...period,
+              dateSortie: transferDate, // Close with transfer date
+              motif: period.motif || 'transfert'
+            };
+          }
+          return period;
+        });
+
+        // Sort history by entry date
+        closedHistory.sort((a: any, b: any) => new Date(a.dateEntree).getTime() - new Date(b.dateEntree).getTime());
+
+        // Update worker with preserved history and new farm assignment
+        batch.update(workerData.ref, {
           fermeId: selectedTransfer.toFermeId,
           chambre: assignment.chambre,
           secteur: assignment.secteur,
-          dateEntree: new Date().toISOString().split('T')[0], // New entry date
-          statut: 'actif'
+          dateEntree: transferDate, // Entry date = transfer date (same as exit date from previous farm)
+          dateSortie: null, // Clear exit date for new period
+          motif: null, // Clear exit motif for new period
+          statut: 'actif',
+          returnCount: (currentWorker.returnCount || 0) + 1,
+          workHistory: [
+            ...closedHistory, // Keep all previous history
+            {
+              id: `transfer_entry_${Date.now()}_${workerData.workerId}`,
+              dateEntree: transferDate, // Entry date = transfer date
+              chambre: assignment.chambre,
+              secteur: assignment.secteur,
+              fermeId: selectedTransfer.toFermeId
+            }
+          ]
         });
 
         // Update room occupancy
@@ -187,7 +288,7 @@ export default function WorkerTransferNotifications() {
         if (room) {
           const roomRef = doc(db, 'rooms', room.id);
           batch.update(roomRef, {
-            listeOccupants: [...room.listeOccupants, workerInfo.workerId],
+            listeOccupants: [...room.listeOccupants, workerData.workerId],
             occupantsActuels: room.occupantsActuels + 1,
             updatedAt: serverTimestamp()
           });
@@ -472,39 +573,51 @@ export default function WorkerTransferNotifications() {
                         </Badge>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-4">
                         <div>
-                          <Label>Chambre</Label>
+                          <Label>Secteur</Label>
                           <Select
-                            value={roomAssignments[worker.workerId]?.chambre || ''}
-                            onValueChange={(value) => handleUpdateRoomAssignment(worker.workerId, 'chambre', value)}
+                            value={selectedSectors[worker.workerId] || ''}
+                            onValueChange={(value) => handleSectorSelection(worker.workerId, value)}
                           >
                             <SelectTrigger>
-                              <SelectValue placeholder="Sélectionner une chambre" />
+                              <SelectValue placeholder="Sélectionner un secteur" />
                             </SelectTrigger>
                             <SelectContent>
-                              {availableRooms.map((room) => (
-                                <SelectItem key={room.id} value={room.numero}>
-                                  <div className="flex items-center justify-between w-full">
-                                    <span>Chambre {room.numero}</span>
-                                    <span className="text-xs text-gray-500 ml-2">
-                                      ({room.occupantsActuels}/{room.capaciteTotale})
-                                    </span>
-                                  </div>
+                              {getAvailableSectors(worker.sexe).map((secteur) => (
+                                <SelectItem key={secteur} value={secteur}>
+                                  {secteur}
                                 </SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
                         </div>
 
-                        <div>
-                          <Label>Secteur</Label>
-                          <Input
-                            placeholder="Entrer le secteur"
-                            value={roomAssignments[worker.workerId]?.secteur || ''}
-                            onChange={(e) => handleUpdateRoomAssignment(worker.workerId, 'secteur', e.target.value)}
-                          />
-                        </div>
+                        {selectedSectors[worker.workerId] && (
+                          <div>
+                            <Label>Chambre</Label>
+                            <Select
+                              value={roomAssignments[worker.workerId]?.chambre || ''}
+                              onValueChange={(value) => handleUpdateRoomAssignment(worker.workerId, 'chambre', value)}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Sélectionner une chambre" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {getRoomsInSector(worker.sexe, selectedSectors[worker.workerId]).map((room) => (
+                                  <SelectItem key={room.id} value={room.numero}>
+                                    <div className="flex items-center justify-between w-full">
+                                      <span>Chambre {room.numero}</span>
+                                      <span className="text-xs text-gray-500 ml-2">
+                                        ({room.occupantsActuels}/{room.capaciteTotale})
+                                      </span>
+                                    </div>
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        )}
                       </div>
                     </div>
                   );

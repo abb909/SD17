@@ -44,6 +44,7 @@ import {
   History,
   Bookmark,
   ChevronRight,
+  ArrowRightLeft,
   X
 } from 'lucide-react';
 
@@ -90,6 +91,14 @@ const navigationItems: NavigationItem[] = [
     icon: BedDouble,
     description: 'Gestion des chambres et logements',
     keywords: ['chambres', 'rooms', 'accommodation', 'housing']
+  },
+  {
+    id: 'transfers',
+    label: 'Transferts',
+    href: '/transferts',
+    icon: ArrowRightLeft,
+    description: 'Gestion des transferts d\'ouvriers',
+    keywords: ['transferts', 'transfers', 'ouvriers', 'workers', 'mutation']
   },
   {
     id: 'statistics',
