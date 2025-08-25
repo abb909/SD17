@@ -2520,6 +2520,7 @@ export default function Statistics() {
       ['Nombre de femmes', femaleCount.toString()],
       ['Répartition hommes/femmes', `${Math.round((maleCount / Math.max(activeSupervisorWorkers.length, 1)) * 100)}% / ${Math.round((femaleCount / Math.max(activeSupervisorWorkers.length, 1)) * 100)}%`],
       ['Durée moyenne ouvriers actifs', `${averageActiveDuration} jours`],
+      ['Durée moyenne ouvriers actifs + sortis', `${averageAllDuration} jours`],
       ['Durée moyenne de séjour (sortis)', `${averageStay} jours`],
       ['Taux de rétention', `${activeSupervisorWorkers.length > 0 ? Math.round((activeSupervisorWorkers.length / supervisorWorkers.length) * 100) : 0}%`],
       ['Date de génération', new Date().toLocaleDateString('fr-FR')]
@@ -3037,7 +3038,7 @@ export default function Statistics() {
                     </div>
                     <div className="pt-2 border-t text-sm space-y-1">
                       <div className="flex justify-between">
-                        <span>Durée moyenne de s��jour:</span>
+                        <span>Durée moyenne de séjour:</span>
                         <span className="font-semibold">{statistics.averageStayDuration} jours</span>
                       </div>
                       <div className="flex justify-between">
