@@ -2506,7 +2506,7 @@ export default function Statistics() {
 
     // Prepare resume data
     const resumeData = [
-      ['Métrique', 'Valeur'],
+      ['M��trique', 'Valeur'],
       ['Nom du superviseur', supervisor.nom],
       ['Téléphone', supervisor.telephone || ''],
       ['Entreprise', supervisor.company || ''],
@@ -2517,7 +2517,8 @@ export default function Statistics() {
       ['Nombre d\'hommes', maleCount.toString()],
       ['Nombre de femmes', femaleCount.toString()],
       ['Répartition hommes/femmes', `${Math.round((maleCount / Math.max(activeSupervisorWorkers.length, 1)) * 100)}% / ${Math.round((femaleCount / Math.max(activeSupervisorWorkers.length, 1)) * 100)}%`],
-      ['Durée moyenne de séjour', `${averageStay} jours`],
+      ['Durée moyenne ouvriers actifs', `${averageActiveDuration} jours`],
+      ['Durée moyenne de séjour (sortis)', `${averageStay} jours`],
       ['Taux de rétention', `${activeSupervisorWorkers.length > 0 ? Math.round((activeSupervisorWorkers.length / supervisorWorkers.length) * 100) : 0}%`],
       ['Date de génération', new Date().toLocaleDateString('fr-FR')]
     ];
@@ -3086,7 +3087,7 @@ export default function Statistics() {
                             ))}
                           </Pie>
                           <Tooltip
-                            formatter={(value, name) => [`${value} départs`, name]}
+                            formatter={(value, name) => [`${value} d��parts`, name]}
                             labelFormatter={(name) => `Motif: ${name}`}
                           />
                           <Legend />
