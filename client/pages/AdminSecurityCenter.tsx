@@ -384,9 +384,13 @@ export default function AdminSecurityCenter() {
                         <Input
                           type="number"
                           min="1"
-                          max="365"
+                          max={getMaxValueForUnit(expirationUnit)}
                           value={expirationValue}
-                          onChange={(e) => setExpirationValue(parseInt(e.target.value) || 1)}
+                          onChange={(e) => {
+                            const value = parseInt(e.target.value) || 1;
+                            const maxValue = getMaxValueForUnit(expirationUnit);
+                            setExpirationValue(Math.min(value, maxValue));
+                          }}
                           placeholder="24"
                         />
                       </div>
