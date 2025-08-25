@@ -130,8 +130,12 @@ export default function AdminSecurityCenter() {
 
       const docRef = await addDoc(collection(db, 'bulkDeletionCodes'), codeData);
 
+      const expirationDescription = `${expirationValue} ${expirationUnit === 'hours' ? 'heure(s)' :
+        expirationUnit === 'days' ? 'jour(s)' :
+        expirationUnit === 'weeks' ? 'semaine(s)' : 'mois'}`;
+
       setSecurityCodeInfo({ code, expiresAt, codeId: docRef.id, maxDeletions });
-      setMessage(`Code de sécurité généré: ${code}\nValide jusqu'à: ${expiresAt.toLocaleString('fr-FR')}\nLimite de suppression: ${maxDeletions} ouvrier(s)`);
+      setMessage(`Code de sécurité généré: ${code}\nDurée de validité: ${expirationDescription}\nValide jusqu'à: ${expiresAt.toLocaleString('fr-FR')}\nLimite de suppression: ${maxDeletions} ouvrier(s)`);
       setActiveCodesInfo(null); // Clear active codes display
       setShowGenerateDialog(false);
 
