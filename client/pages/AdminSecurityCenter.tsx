@@ -91,9 +91,22 @@ export default function AdminSecurityCenter() {
       // Generate a 6-digit code
       const code = Math.floor(100000 + Math.random() * 900000).toString();
 
-      // Set expiration to 24 hours from now
+      // Set expiration based on selected period
       const expiresAt = new Date();
-      expiresAt.setHours(expiresAt.getHours() + 24);
+      switch (expirationUnit) {
+        case 'hours':
+          expiresAt.setHours(expiresAt.getHours() + expirationValue);
+          break;
+        case 'days':
+          expiresAt.setDate(expiresAt.getDate() + expirationValue);
+          break;
+        case 'weeks':
+          expiresAt.setDate(expiresAt.getDate() + (expirationValue * 7));
+          break;
+        case 'months':
+          expiresAt.setMonth(expiresAt.getMonth() + expirationValue);
+          break;
+      }
 
       // Store the code in Firestore
       const codeData = {
