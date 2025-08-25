@@ -632,6 +632,18 @@ export default function Rooms() {
                 </Select>
               </div>
               <div className="space-y-2">
+                <Label htmlFor="add-secteur">Secteur</Label>
+                <Input
+                  id="add-secteur"
+                  placeholder="Ex: Bloc A, Secteur Nord..."
+                  value={addFormData.secteur}
+                  onChange={(e) => setAddFormData(prev => ({ ...prev, secteur: e.target.value }))}
+                />
+                <p className="text-xs text-gray-500">
+                  Laissez vide pour assigner automatiquement selon le genre
+                </p>
+              </div>
+              <div className="space-y-2">
                 <Label htmlFor="add-capacite">Capacité maximale</Label>
                 <Input
                   id="add-capacite"
