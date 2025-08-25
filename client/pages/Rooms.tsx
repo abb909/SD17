@@ -374,6 +374,7 @@ export default function Rooms() {
         numero: addFormData.numero.trim(),
         fermeId: addFormData.fermeId,
         genre: addFormData.genre,
+        secteur: addFormData.secteur.trim() || `Secteur ${addFormData.genre === 'hommes' ? 'Hommes' : 'Femmes'}`, // Default sector based on gender
         capaciteTotale: addFormData.capaciteTotale,
         occupantsActuels: 0,
         listeOccupants: []
