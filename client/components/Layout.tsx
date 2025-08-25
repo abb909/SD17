@@ -33,6 +33,7 @@ import {
   BedDouble,
   BarChart3,
   Package,
+  ArrowRightLeft,
   X
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
