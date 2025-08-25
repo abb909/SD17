@@ -411,11 +411,23 @@ export default function AdminSecurityCenter() {
                         </Select>
                       </div>
                     </div>
-                    <p className="text-xs text-gray-500">
-                      Le code expirera dans {expirationValue} {expirationUnit === 'hours' ? 'heure(s)' :
-                        expirationUnit === 'days' ? 'jour(s)' :
-                        expirationUnit === 'weeks' ? 'semaine(s)' : 'mois'}
-                    </p>
+                    <div className="space-y-1">
+                      <p className="text-xs text-gray-500">
+                        Le code expirera dans {expirationValue} {expirationUnit === 'hours' ? 'heure(s)' :
+                          expirationUnit === 'days' ? 'jour(s)' :
+                          expirationUnit === 'weeks' ? 'semaine(s)' : 'mois'}
+                      </p>
+                      <p className="text-xs text-gray-400">
+                        Limite max: {getMaxValueForUnit(expirationUnit)} {expirationUnit === 'hours' ? 'heures' :
+                          expirationUnit === 'days' ? 'jours' :
+                          expirationUnit === 'weeks' ? 'semaines' : 'mois'}
+                      </p>
+                      {!isValidExpirationPeriod() && (
+                        <p className="text-xs text-red-600">
+                          ⚠️ Période d'expiration invalide
+                        </p>
+                      )}
+                    </div>
                   </div>
                   <Alert className="border-orange-200 bg-orange-50">
                     <AlertCircle className="h-4 w-4" />
