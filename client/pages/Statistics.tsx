@@ -2546,13 +2546,39 @@ export default function Statistics() {
     // Create workbook
     const wb = XLSX.utils.book_new();
 
-    // Create workers sheet
+    // Create and format workers sheet
     const workersSheet = XLSX.utils.json_to_sheet(workersData);
-    XLSX.utils.book_append_sheet(wb, workersSheet, 'Ouvriers');
 
-    // Create resume sheet
+    // Auto-size columns for workers sheet
+    const workersRange = XLSX.utils.decode_range(workersSheet['!ref'] || 'A1:A1');
+    const workersColWidths = [];
+    for (let C = workersRange.s.c; C <= workersRange.e.c; ++C) {
+      let maxWidth = 10; // minimum width
+      for (let R = workersRange.s.r; R <= workersRange.e.r; ++R) {
+        const cell = workersSheet[XLSX.utils.encode_cell({c: C, r: R})];
+        if (cell && cell.v) {
+          const cellLength = cell.v.toString().length;
+          if (cellLength > maxWidth) {
+            maxWidth = Math.min(cellLength + 2, 50); // max width of 50
+          }
+        }
+      }
+      workersColWidths.push({wch: maxWidth});
+    }
+    workersSheet['!cols'] = workersColWidths;
+
+    XLSX.utils.book_append_sheet(wb, workersSheet, 'Liste des Ouvriers');
+
+    // Create and format resume sheet
     const resumeSheet = XLSX.utils.aoa_to_sheet(resumeData);
-    XLSX.utils.book_append_sheet(wb, resumeSheet, 'Résumé');
+
+    // Auto-size columns for resume sheet
+    resumeSheet['!cols'] = [
+      {wch: 35}, // First column (labels) - wider
+      {wch: 20}  // Second column (values)
+    ];
+
+    XLSX.utils.book_append_sheet(wb, resumeSheet, 'Résumé Exécutif');
 
     // Generate filename
     const sanitizedName = supervisor.nom.replace(/[^a-zA-Z0-9]/g, '_');
@@ -2812,7 +2838,7 @@ export default function Statistics() {
             />
 
             <KPICard
-              title="R��tention"
+              title="Rétention"
               value={`${statistics.retentionRate}%`}
               subtitle="Taux de fidélisation"
               icon={Target}
