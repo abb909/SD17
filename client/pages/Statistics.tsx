@@ -2506,7 +2506,6 @@ export default function Statistics() {
     const resumeData = [
       ['M��trique', 'Valeur'],
       ['Nom du superviseur', supervisor.nom],
-      ['Téléphone', supervisor.telephone || ''],
       ['Entreprise', supervisor.company || ''],
       ['Total ouvriers gérés', supervisorWorkers.length.toString()],
       ['Ouvriers actifs', activeSupervisorWorkers.length.toString()],
