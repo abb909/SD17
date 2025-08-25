@@ -236,6 +236,11 @@ const AppRoutes = () => {
           <Rooms />
         </ProtectedRoute>
       } />
+      <Route path="/transferts" element={
+        <ProtectedRoute>
+          <Transfers />
+        </ProtectedRoute>
+      } />
       <Route path="/stock" element={
         <ProtectedRoute>
           <Stock />
