@@ -2503,6 +2503,10 @@ export default function Statistics() {
     });
     const averageActiveDuration = activeDurations.length > 0 ? Math.round(activeDurations.reduce((sum, days) => sum + days, 0) / activeDurations.length) : 0;
 
+    // Calculate average duration for all workers (active + exited)
+    const allDurations = [...activeDurations, ...stayDurations];
+    const averageAllDuration = allDurations.length > 0 ? Math.round(allDurations.reduce((sum, days) => sum + days, 0) / allDurations.length) : 0;
+
     // Prepare resume data
     const resumeData = [
       ['M��trique', 'Valeur'],
@@ -3033,7 +3037,7 @@ export default function Statistics() {
                     </div>
                     <div className="pt-2 border-t text-sm space-y-1">
                       <div className="flex justify-between">
-                        <span>Durée moyenne de séjour:</span>
+                        <span>Durée moyenne de s��jour:</span>
                         <span className="font-semibold">{statistics.averageStayDuration} jours</span>
                       </div>
                       <div className="flex justify-between">
