@@ -2467,7 +2467,6 @@ export default function Statistics() {
     // Prepare workers data for Excel
     const workersData = supervisorWorkers.map(worker => ({
       'Nom': worker.nom,
-      'Prénom': worker.prenom,
       'Âge': worker.age,
       'Sexe': worker.sexe === 'homme' ? 'Homme' : 'Femme',
       'Téléphone': worker.telephone || '',
