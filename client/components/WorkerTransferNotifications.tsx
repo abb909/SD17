@@ -206,6 +206,35 @@ export default function WorkerTransferNotifications() {
 
       await batch.commit();
 
+      // Send notification to source farm admin about confirmation
+      try {
+        const sourceAdmins = users?.filter(u =>
+          u.fermeId === selectedTransfer.fromFermeId &&
+          (u.role === 'admin' || u.role === 'superadmin')
+        ) || [];
+
+        for (const admin of sourceAdmins) {
+          await sendNotification({
+            type: 'worker_transfer_confirmed',
+            title: 'Transfert d\'ouvriers confirmé',
+            message: `Le transfert de ${selectedTransfer.workers.length} ouvrier(s) vers ${selectedTransfer.toFermeName} a été confirmé et accepté.`,
+            recipientId: admin.uid,
+            priority: 'medium',
+            fermeId: selectedTransfer.fromFermeId,
+            createdAt: new Date(),
+            read: false,
+            data: {
+              transferId: selectedTransfer.id,
+              workerCount: selectedTransfer.workers.length,
+              destinationFarm: selectedTransfer.toFermeName
+            }
+          });
+        }
+        console.log(`✅ Sent confirmation notification to ${sourceAdmins.length} admin(s) at ${selectedTransfer.fromFermeName}`);
+      } catch (notificationError) {
+        console.error('❌ Error sending confirmation notification:', notificationError);
+      }
+
       toast({
         title: "Transfert confirmé",
         description: `${selectedTransfer.workers.length} ouvrier(s) ont été transférés avec succès.`,
