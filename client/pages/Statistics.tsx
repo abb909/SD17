@@ -2455,6 +2455,83 @@ export default function Statistics() {
     }
   };
 
+  // Function to generate Excel file for supervisor
+  const generateSupervisorExcel = (supervisorId: string) => {
+    const supervisor = supervisors.find(s => s.id === supervisorId);
+    if (!supervisor) return;
+
+    // Get workers associated with this supervisor
+    const supervisorWorkers = allWorkers.filter(w => w.supervisorId === supervisorId);
+    const activeSupervisorWorkers = supervisorWorkers.filter(w => w.statut === 'actif');
+
+    // Prepare workers data for Excel
+    const workersData = supervisorWorkers.map(worker => ({
+      'Nom': worker.nom,
+      'Prénom': worker.prenom,
+      'Âge': worker.age,
+      'Sexe': worker.sexe === 'homme' ? 'Homme' : 'Femme',
+      'Téléphone': worker.telephone || '',
+      'Chambre': worker.chambre || '',
+      'Date d\'entrée': worker.dateEntree ? new Date(worker.dateEntree).toLocaleDateString('fr-FR') : '',
+      'Date de sortie': worker.dateSortie ? new Date(worker.dateSortie).toLocaleDateString('fr-FR') : '',
+      'Statut': worker.statut === 'actif' ? 'Actif' : 'Inactif',
+      'Motif de sortie': worker.motif ? getMotifLabel(worker.motif) : '',
+      'Ferme': fermes.find(f => f.id === worker.fermeId)?.nom || worker.fermeId
+    }));
+
+    // Calculate supervisor statistics
+    const ages = activeSupervisorWorkers.map(w => w.age).filter(age => age > 0);
+    const averageAge = ages.length > 0 ? Math.round(ages.reduce((sum, age) => sum + age, 0) / ages.length) : 0;
+
+    const maleCount = activeSupervisorWorkers.filter(w => w.sexe === 'homme').length;
+    const femaleCount = activeSupervisorWorkers.filter(w => w.sexe === 'femme').length;
+
+    // Calculate average length of stay for workers who have left
+    const exitedWorkers = supervisorWorkers.filter(w => w.statut === 'inactif' && w.dateEntree && w.dateSortie);
+    const stayDurations = exitedWorkers.map(w => {
+      const entryDate = new Date(w.dateEntree);
+      const exitDate = new Date(w.dateSortie!);
+      return Math.floor((exitDate.getTime() - entryDate.getTime()) / (1000 * 60 * 60 * 24));
+    });
+    const averageStay = stayDurations.length > 0 ? Math.round(stayDurations.reduce((sum, days) => sum + days, 0) / stayDurations.length) : 0;
+
+    // Prepare resume data
+    const resumeData = [
+      ['Métrique', 'Valeur'],
+      ['Nom du superviseur', supervisor.nom],
+      ['Téléphone', supervisor.telephone || ''],
+      ['Entreprise', supervisor.company || ''],
+      ['Total ouvriers gérés', supervisorWorkers.length.toString()],
+      ['Ouvriers actifs', activeSupervisorWorkers.length.toString()],
+      ['Ouvriers sortis', (supervisorWorkers.length - activeSupervisorWorkers.length).toString()],
+      ['Âge moyen des ouvriers', `${averageAge} ans`],
+      ['Nombre d\'hommes', maleCount.toString()],
+      ['Nombre de femmes', femaleCount.toString()],
+      ['Répartition hommes/femmes', `${Math.round((maleCount / Math.max(activeSupervisorWorkers.length, 1)) * 100)}% / ${Math.round((femaleCount / Math.max(activeSupervisorWorkers.length, 1)) * 100)}%`],
+      ['Durée moyenne de séjour', `${averageStay} jours`],
+      ['Taux de rétention', `${activeSupervisorWorkers.length > 0 ? Math.round((activeSupervisorWorkers.length / supervisorWorkers.length) * 100) : 0}%`],
+      ['Date de génération', new Date().toLocaleDateString('fr-FR')]
+    ];
+
+    // Create workbook
+    const wb = XLSX.utils.book_new();
+
+    // Create workers sheet
+    const workersSheet = XLSX.utils.json_to_sheet(workersData);
+    XLSX.utils.book_append_sheet(wb, workersSheet, 'Ouvriers');
+
+    // Create resume sheet
+    const resumeSheet = XLSX.utils.aoa_to_sheet(resumeData);
+    XLSX.utils.book_append_sheet(wb, resumeSheet, 'Résumé');
+
+    // Generate filename
+    const sanitizedName = supervisor.nom.replace(/[^a-zA-Z0-9]/g, '_');
+    const fileName = `superviseur_${sanitizedName}_${new Date().toISOString().split('T')[0]}.xlsx`;
+
+    // Download file
+    XLSX.writeFile(wb, fileName);
+  };
+
   // Get occupancy summary for debugging
   const occupancySummary = getOccupancySummary(allWorkers, allRooms);
 
@@ -3203,7 +3280,6 @@ export default function Statistics() {
                 columns={[
                   { id: 'nom', header: 'Nom du Superviseur' },
                   { id: 'telephone', header: 'Téléphone' },
-
                   { id: 'workerCount', header: 'Nombre d\'ouvriers' },
                   { id: 'percentage', header: 'Pourcentage' },
                   {
@@ -3218,6 +3294,21 @@ export default function Statistics() {
                       }`}>
                         {supervisor.performance}
                       </span>
+                    )
+                  },
+                  {
+                    id: 'actions',
+                    header: 'Actions',
+                    cell: (supervisor: any) => (
+                      <Button
+                        onClick={() => generateSupervisorExcel(supervisor.id)}
+                        variant="outline"
+                        size="sm"
+                        className="h-8 px-3 text-xs"
+                      >
+                        <Download className="mr-1 h-3 w-3" />
+                        Excel
+                      </Button>
                     )
                   }
                 ]}
