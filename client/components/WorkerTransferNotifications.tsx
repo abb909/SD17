@@ -168,10 +168,11 @@ export default function WorkerTransferNotifications() {
 
   const validateAssignments = () => {
     if (!selectedTransfer) return false;
-    
+
     return selectedTransfer.workers.every(worker => {
       const assignment = roomAssignments[worker.workerId];
-      return assignment && assignment.chambre && assignment.secteur;
+      const sectorSelected = selectedSectors[worker.workerId];
+      return assignment && assignment.chambre && assignment.secteur && sectorSelected;
     });
   };
 
