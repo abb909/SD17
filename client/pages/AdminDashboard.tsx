@@ -237,6 +237,9 @@ export default function AdminDashboard() {
       {/* Worker Transfer Notifications */}
       <WorkerTransferNotifications />
 
+      {/* Worker Transfer Status */}
+      <WorkerTransferStatus />
+
       {/* User Roles Breakdown */}
       <Card className="mb-8 border-0 shadow-lg">
         <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100 border-b">
