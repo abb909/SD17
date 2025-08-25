@@ -182,37 +182,6 @@ export default function AdminContentManagement() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center text-lg">
-              <Package className="mr-2 h-5 w-5 text-green-600" />
-              Articles rapides
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-sm text-gray-600">
-              Créez rapidement des articles d'exemple pour commencer.
-            </p>
-            <Button
-              onClick={handleCreateSampleArticles}
-              disabled={loading}
-              className="w-full bg-gradient-to-r from-green-600 to-emerald-600"
-            >
-              {loading ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  Création en cours...
-                </>
-              ) : (
-                <>
-                  <Package className="mr-2 h-4 w-4" />
-                  Créer articles d'exemple
-                </>
-              )}
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center text-lg">
               <Plus className="mr-2 h-5 w-5 text-blue-600" />
               Nouvel article
             </CardTitle>
