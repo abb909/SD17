@@ -2580,9 +2580,10 @@ export default function Statistics() {
 
     XLSX.utils.book_append_sheet(wb, resumeSheet, 'Résumé Exécutif');
 
-    // Generate filename
+    // Generate professional filename
     const sanitizedName = supervisor.nom.replace(/[^a-zA-Z0-9]/g, '_');
-    const fileName = `superviseur_${sanitizedName}_${new Date().toISOString().split('T')[0]}.xlsx`;
+    const date = new Date().toISOString().split('T')[0];
+    const fileName = `Rapport_Supervision_${sanitizedName}_${date}.xlsx`;
 
     // Download file
     XLSX.writeFile(wb, fileName);
