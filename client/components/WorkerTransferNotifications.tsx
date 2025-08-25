@@ -62,6 +62,7 @@ export default function WorkerTransferNotifications() {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [rejectionReason, setRejectionReason] = useState('');
   const [roomAssignments, setRoomAssignments] = useState<{[workerId: string]: {chambre: string; secteur: string}}>({});
+  const [selectedSectors, setSelectedSectors] = useState<{[workerId: string]: string}>({});
 
   // Load pending transfers and notifications
   useEffect(() => {
