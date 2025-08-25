@@ -139,6 +139,23 @@ export default function WorkerTransferNotifications() {
     setShowConfirmDialog(true);
   };
 
+  const handleSectorSelection = (workerId: string, secteur: string) => {
+    setSelectedSectors(prev => ({
+      ...prev,
+      [workerId]: secteur
+    }));
+
+    // Update room assignment with selected sector and clear chambre
+    setRoomAssignments(prev => ({
+      ...prev,
+      [workerId]: {
+        ...prev[workerId],
+        secteur: secteur,
+        chambre: '' // Clear room when sector changes
+      }
+    }));
+  };
+
   const handleUpdateRoomAssignment = (workerId: string, field: 'chambre' | 'secteur', value: string) => {
     setRoomAssignments(prev => ({
       ...prev,
