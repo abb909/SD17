@@ -105,11 +105,21 @@ export default function WorkerTransferNotifications() {
   }, [user?.fermeId]);
 
   const getAvailableRooms = (workerGender: 'homme' | 'femme') => {
-    return rooms.filter(room => 
-      room.fermeId === user?.fermeId && 
+    return rooms.filter(room =>
+      room.fermeId === user?.fermeId &&
       room.genre === (workerGender === 'homme' ? 'hommes' : 'femmes') &&
       room.occupantsActuels < room.capaciteTotale
     );
+  };
+
+  const getAvailableSectors = (workerGender: 'homme' | 'femme') => {
+    const availableRooms = getAvailableRooms(workerGender);
+    const uniqueSectors = [...new Set(availableRooms.map(room => room.secteur).filter(secteur => secteur))];
+    return uniqueSectors.sort();
+  };
+
+  const getRoomsInSector = (workerGender: 'homme' | 'femme', secteur: string) => {
+    return getAvailableRooms(workerGender).filter(room => room.secteur === secteur);
   };
 
   const handleShowConfirmDialog = (transfer: WorkerTransfer) => {
