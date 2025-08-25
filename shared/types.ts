@@ -227,6 +227,75 @@ export interface TransferNotification {
   priority: 'low' | 'medium' | 'high' | 'urgent';
 }
 
+export interface WorkerTransfer {
+  id: string;
+  fromFermeId: string;
+  fromFermeName?: string;
+  toFermeId: string;
+  toFermeName?: string;
+  workers: {
+    workerId: string;
+    workerName: string;
+    matricule?: string;
+    sexe: 'homme' | 'femme';
+    currentChambre: string;
+    currentSecteur: string;
+    assignedChambre?: string; // Room assigned by receiving farm admin
+    assignedSecteur?: string; // Sector assigned by receiving farm admin
+  }[];
+  status: 'pending' | 'pending_approval' | 'confirmed' | 'in_transit' | 'delivered' | 'cancelled' | 'rejected';
+  createdAt: any;
+  confirmedAt?: any;
+  deliveredAt?: any;
+  rejectedAt?: any;
+  cancelledAt?: any;
+  transferredBy: string;
+  transferredByName?: string;
+  receivedBy?: string;
+  receivedByName?: string;
+  rejectedBy?: string;
+  rejectedByName?: string;
+  cancelledBy?: string;
+  cancelledByName?: string;
+  notes?: string;
+  rejectionReason?: string;
+  priority?: 'low' | 'medium' | 'high' | 'urgent';
+  trackingNumber?: string;
+  estimatedDelivery?: any;
+  roomAssignments?: {
+    [workerId: string]: {
+      chambre: string;
+      secteur: string;
+    };
+  };
+}
+
+export interface WorkerTransferNotification {
+  id: string;
+  transferId: string;
+  type: 'incoming_worker_transfer' | 'worker_transfer_confirmed' | 'worker_transfer_rejected' | 'worker_transfer_delivered';
+  fromFermeId: string;
+  fromFermeName: string;
+  toFermeId: string;
+  toFermeName: string;
+  workers: {
+    workerId: string;
+    workerName: string;
+    matricule?: string;
+    sexe: 'homme' | 'femme';
+  }[];
+  workerCount: number;
+  message: string;
+  status: 'unread' | 'read' | 'acknowledged';
+  createdAt: any;
+  readAt?: any;
+  acknowledgedAt?: any;
+  userId: string;
+  targetAudience?: 'superadmins' | 'admins' | 'users';
+  requiresAction?: boolean;
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+}
+
 export interface AdminNotificationRequest {
   type: 'cross-farm-duplicate-attempt';
   existingWorker: {
