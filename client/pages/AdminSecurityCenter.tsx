@@ -447,7 +447,7 @@ export default function AdminSecurityCenter() {
               </div>
               <div className="flex items-center">
                 <div className="w-2 h-2 bg-orange-500 rounded-full mr-2"></div>
-                <span>Durée de validité: 24 heures</span>
+                <span>Durée de validité: Configurable (heures, jours, semaines, mois)</span>
               </div>
               <div className="flex items-center">
                 <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
