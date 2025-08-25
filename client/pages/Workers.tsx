@@ -124,9 +124,10 @@ import {
   Package,
   ChevronLeft,
   ChevronRight,
-  CheckSquare
+  CheckSquare,
+  Send
 } from 'lucide-react';
-import { Worker, Ferme, Room, User, StockItem, AllocatedItem } from '@shared/types';
+import { Worker, Ferme, Room, User, StockItem, AllocatedItem, WorkerTransfer } from '@shared/types';
 import * as XLSX from 'xlsx';
 import { doc, updateDoc, writeBatch, collection, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -2467,7 +2468,7 @@ export default function Workers() {
           batch.update(stockRef, {
             lastUpdated: new Date().toISOString()
           });
-          console.log(`📦 Stock touched: ${currentStock.item} (no quantity change - tracking via allocations)`);
+          console.log(`�� Stock touched: ${currentStock.item} (no quantity change - tracking via allocations)`);
         }
       }
 
@@ -2806,7 +2807,7 @@ export default function Workers() {
                     // Check all notifications in database
                     const allNotifications = await checkAllNotifications();
 
-                    alert(`📊 Résultats de vérification:\n\n` +
+                    alert(`�� Résultats de vérification:\n\n` +
                       `• Vos notifications: ${userNotifications.count}\n` +
                       `• Total dans la base: ${allNotifications.total}\n` +
                       `• Utilisateurs avec notifications: ${Object.keys(allNotifications.byRecipient).length}\n\n` +
