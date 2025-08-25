@@ -421,6 +421,7 @@ export default function Rooms() {
       numero: room.numero,
       fermeId: room.fermeId,
       genre: room.genre,
+      secteur: room.secteur || `Secteur ${room.genre === 'hommes' ? 'Hommes' : 'Femmes'}`, // Fallback for existing rooms without secteur
       capaciteTotale: room.capaciteTotale,
       occupantsActuels: room.occupantsActuels,
       listeOccupants: room.listeOccupants
