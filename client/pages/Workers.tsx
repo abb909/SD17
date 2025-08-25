@@ -183,6 +183,12 @@ export default function Workers() {
   const [editingWorker, setEditingWorker] = useState<Worker | null>(null);
   const [viewHistoryWorker, setViewHistoryWorker] = useState<Worker | null>(null);
   const [isMotifOpen, setIsMotifOpen] = useState(false);
+  const [isTransferDialogOpen, setIsTransferDialogOpen] = useState(false);
+  const [transferFormData, setTransferFormData] = useState({
+    toFermeId: '',
+    notes: '',
+    priority: 'medium' as 'low' | 'medium' | 'high' | 'urgent'
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [autoFilledWorker, setAutoFilledWorker] = useState<string>(''); // Name of auto-filled worker
