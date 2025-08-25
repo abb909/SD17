@@ -63,6 +63,30 @@ export default function AdminSecurityCenter() {
     return expirationValue >= 1 && expirationValue <= maxValue;
   };
 
+  // Effect to adjust expiration value when unit changes
+  useEffect(() => {
+    const maxValue = getMaxValueForUnit(expirationUnit);
+    if (expirationValue > maxValue) {
+      // Set default values based on unit
+      switch (expirationUnit) {
+        case 'hours':
+          setExpirationValue(24);
+          break;
+        case 'days':
+          setExpirationValue(7);
+          break;
+        case 'weeks':
+          setExpirationValue(2);
+          break;
+        case 'months':
+          setExpirationValue(1);
+          break;
+        default:
+          setExpirationValue(1);
+      }
+    }
+  }, [expirationUnit]);
+
   // Security code management states
   const [securityCodeInfo, setSecurityCodeInfo] = useState<{
     code: string;
