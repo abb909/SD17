@@ -156,6 +156,22 @@ export default function WorkerTransferNotifications() {
 
     try {
       setLoading(true);
+      const transferDate = new Date().toISOString().split('T')[0];
+
+      // First, fetch all worker data to preserve history
+      const workerDataPromises = selectedTransfer.workers.map(async (workerInfo) => {
+        const workerRef = doc(db, 'workers', workerInfo.workerId);
+        const workerDoc = await getDoc(workerRef);
+        return {
+          workerId: workerInfo.workerId,
+          data: workerDoc.exists() ? workerDoc.data() : null,
+          ref: workerRef
+        };
+      });
+
+      const workersData = await Promise.all(workerDataPromises);
+
+      // Now create the batch with proper history preservation
       const batch = writeBatch(db);
 
       // Update transfer document
@@ -169,16 +185,11 @@ export default function WorkerTransferNotifications() {
       });
 
       // Update each worker with proper history preservation
-      for (const workerInfo of selectedTransfer.workers) {
-        const assignment = roomAssignments[workerInfo.workerId];
-        const workerRef = doc(db, 'workers', workerInfo.workerId);
+      for (const workerData of workersData) {
+        if (!workerData.data) continue;
 
-        // Get current worker data to preserve history
-        const workerDoc = await getDoc(workerRef);
-        if (!workerDoc.exists()) continue;
-
-        const currentWorker = workerDoc.data() as any;
-        const transferDate = new Date().toISOString().split('T')[0];
+        const assignment = roomAssignments[workerData.workerId];
+        const currentWorker = workerData.data as any;
 
         // Preserve existing work history and properly close current period
         const existingHistory = currentWorker.workHistory || [];
@@ -192,7 +203,7 @@ export default function WorkerTransferNotifications() {
         // If main period is not in history, add it with proper closure
         if (!mainPeriodInHistory && currentWorker.dateEntree) {
           const mainPeriod = {
-            id: `transfer_period_${Date.now()}_${workerInfo.workerId}`,
+            id: `transfer_period_${Date.now()}_${workerData.workerId}`,
             dateEntree: currentWorker.dateEntree,
             dateSortie: transferDate, // Exit date = transfer date
             motif: 'transfert', // Set transfer as reason
@@ -219,7 +230,7 @@ export default function WorkerTransferNotifications() {
         closedHistory.sort((a: any, b: any) => new Date(a.dateEntree).getTime() - new Date(b.dateEntree).getTime());
 
         // Update worker with preserved history and new farm assignment
-        batch.update(workerRef, {
+        batch.update(workerData.ref, {
           fermeId: selectedTransfer.toFermeId,
           chambre: assignment.chambre,
           secteur: assignment.secteur,
@@ -231,7 +242,7 @@ export default function WorkerTransferNotifications() {
           workHistory: [
             ...closedHistory, // Keep all previous history
             {
-              id: `transfer_entry_${Date.now()}_${workerInfo.workerId}`,
+              id: `transfer_entry_${Date.now()}_${workerData.workerId}`,
               dateEntree: transferDate, // Entry date = transfer date
               chambre: assignment.chambre,
               secteur: assignment.secteur,
