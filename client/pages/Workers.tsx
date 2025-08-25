@@ -1425,7 +1425,7 @@ export default function Workers() {
 
       // Success notification
       setTimeout(() => {
-        alert(`✅ Ouvrier réactivé: ${existingWorkerByCIN.nom} a été réactiv�� avec succès et ajouté à son historique.`);
+        alert(`✅ Ouvrier réactivé: ${existingWorkerByCIN.nom} a été réactivé avec succès et ajouté à son historique.`);
       }, 100);
 
     } catch (error: any) {
@@ -4293,6 +4293,15 @@ export default function Workers() {
                   >
                     <Download className="mr-2 h-4 w-4" />
                     Exporter
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleBulkTransfer}
+                    className="text-green-600 hover:text-green-700 border-green-200 h-9 text-sm"
+                  >
+                    <Send className="mr-2 h-4 w-4" />
+                    Transférer
                   </Button>
                   <Button
                     variant="outline"
