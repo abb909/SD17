@@ -5161,6 +5161,102 @@ export default function Workers() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Worker Transfer Dialog */}
+      <Dialog open={isTransferDialogOpen} onOpenChange={setIsTransferDialogOpen}>
+        <DialogContent className="w-[95vw] max-w-md mx-2 sm:mx-auto">
+          <DialogHeader>
+            <DialogTitle>Transférer des Ouvriers</DialogTitle>
+            <DialogDescription>
+              Transférer {selectedWorkers.size} ouvrier(s) vers une autre ferme
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="destination-ferme">Ferme de destination</Label>
+              <Select
+                value={transferFormData.toFermeId}
+                onValueChange={(value) => setTransferFormData({...transferFormData, toFermeId: value})}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Sélectionner une ferme" />
+                </SelectTrigger>
+                <SelectContent>
+                  {fermes.filter(f => f.id !== user?.fermeId).map((ferme) => (
+                    <SelectItem key={ferme.id} value={ferme.id}>
+                      {ferme.nom}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="priority">Priorité</Label>
+              <Select
+                value={transferFormData.priority}
+                onValueChange={(value: 'low' | 'medium' | 'high' | 'urgent') =>
+                  setTransferFormData({...transferFormData, priority: value})}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="low">Basse</SelectItem>
+                  <SelectItem value="medium">Moyenne</SelectItem>
+                  <SelectItem value="high">Haute</SelectItem>
+                  <SelectItem value="urgent">Urgente</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="notes">Notes (optionnel)</Label>
+              <Input
+                id="notes"
+                placeholder="Notes sur le transfert..."
+                value={transferFormData.notes}
+                onChange={(e) => setTransferFormData({...transferFormData, notes: e.target.value})}
+              />
+            </div>
+
+            {/* Preview of selected workers */}
+            <div className="border rounded-lg p-3 max-h-32 overflow-y-auto">
+              <Label className="text-sm font-medium">Ouvriers sélectionnés:</Label>
+              <div className="space-y-1 mt-2">
+                {allWorkers.filter(w => selectedWorkers.has(w.id)).map(worker => (
+                  <div key={worker.id} className="text-sm text-gray-600 flex justify-between">
+                    <span>{worker.nom}</span>
+                    <span className="text-xs">{worker.sexe === 'homme' ? 'H' : 'F'}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex justify-end space-x-2 pt-4">
+              <Button
+                variant="outline"
+                onClick={() => setIsTransferDialogOpen(false)}
+                disabled={loading}
+              >
+                Annuler
+              </Button>
+              <Button
+                onClick={handleCreateWorkerTransfer}
+                disabled={loading || !transferFormData.toFermeId}
+                className="bg-green-600 hover:bg-green-700"
+              >
+                {loading ? (
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                ) : (
+                  <Send className="mr-2 h-4 w-4" />
+                )}
+                Créer le transfert
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
