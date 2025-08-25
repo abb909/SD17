@@ -4,6 +4,7 @@ import { StatsCard } from '@/components/StatsCard';
 import { FermeCard } from '@/components/FermeCard';
 import { LoadingError } from '@/components/LoadingError';
 import WorkerTransferNotifications from '@/components/WorkerTransferNotifications';
+import WorkerTransferStatus from '@/components/WorkerTransferStatus';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
