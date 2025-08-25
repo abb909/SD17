@@ -413,6 +413,9 @@ export default function Dashboard() {
           </div>
         </div>
 
+        {/* Worker Transfer Notifications */}
+        <WorkerTransferNotifications />
+
         {/* Filters */}
         <Card>
           <CardContent>
