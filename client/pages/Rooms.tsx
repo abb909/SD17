@@ -190,7 +190,7 @@ export default function Rooms() {
       console.log('✅ Room occupancy synchronized successfully');
       await refetchRooms(); // Refresh the room data
     } catch (error) {
-      console.error('❌ Room occupancy sync failed:', error);
+      console.error('�� Room occupancy sync failed:', error);
     } finally {
       setSyncingRooms(false);
     }
@@ -400,6 +400,7 @@ export default function Rooms() {
         numero: '',
         fermeId: user?.fermeId || '',
         genre: 'hommes',
+        secteur: '',
         capaciteTotale: 4
       });
       setIsAddDialogOpen(false);
