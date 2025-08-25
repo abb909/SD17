@@ -93,6 +93,14 @@ const navigationItems: NavigationItem[] = [
     keywords: ['chambres', 'rooms', 'accommodation', 'housing']
   },
   {
+    id: 'transfers',
+    label: 'Transferts',
+    href: '/transferts',
+    icon: ArrowRightLeft,
+    description: 'Gestion des transferts d\'ouvriers',
+    keywords: ['transferts', 'transfers', 'ouvriers', 'workers', 'mutation']
+  },
+  {
     id: 'statistics',
     label: 'Statistiques',
     href: '/statistiques',
